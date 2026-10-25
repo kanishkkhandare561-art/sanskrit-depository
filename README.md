@@ -1,50 +1,36 @@
-# Sanskrit Depository
+# Rebuilding the word analysis
 
-A reading site for Sanskrit texts in Devanagari, where every word can be tapped to see its sandhi split, grammar and English meaning. The first text is the **Nyāyasūtra of Gautama with the Nyāyabhāṣya of Vātsyāyana** — all 528 sūtras and the full commentary.
+You only need this folder if you want to correct an analysis, improve a meaning, or add a new text. The website itself (in the folder above) is already built and runs without any of this.
 
-## What is in this repository
-
-| Path | What it is |
-|---|---|
-| `index.html`, `assets/` | The website (plain HTML, CSS and JavaScript — no build step) |
-| `data/` | The text and the word analyses, one file per āhnika, plus the glossary |
-| `build/` | The scripts that produced `data/` — only needed to fix analyses or add texts (see `build/README.md`) |
-| `.nojekyll` | Tells GitHub Pages to serve the files exactly as they are |
-
-## Publishing on GitHub Pages
-
-1. On GitHub, create a new **public** repository, for example `sanskrit-depository`. Leave “Add a README” unticked.
-2. Open the empty repository, choose **uploading an existing file**, and drag in everything from this folder (`index.html`, `.nojekyll`, `README.md`, and the `assets`, `data` and `build` folders). Click **Commit changes**.
-   - `.nojekyll` is a hidden file. On a Mac press <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>.</kbd> in Finder to see it; on Windows tick *View → Hidden items*.
-3. Go to **Settings → Pages**. Under *Build and deployment*, set **Source** to *Deploy from a branch*, **Branch** to `main` and folder `/ (root)`, then **Save**.
-4. After a minute or two the site is live at `https://YOUR-USERNAME.github.io/sanskrit-depository/`. The address also appears at the top of the Pages settings.
-
-Using git instead of the browser:
+## One-time setup
 
 ```bash
-cd sanskrit-depository        # this folder
-git init -b main
-git add .
-git commit -m "Nyāyasūtra with Vātsyāyana-bhāṣya"
-git remote add origin https://github.com/YOUR-USERNAME/sanskrit-depository.git
-git push -u origin main
+cd build
+pip install -r requirements.txt
+python3 -c "import vidyut; vidyut.download_data('vdata')"          # Sanskrit morphology data (~80 MB)
+curl -L -o mw.txt https://raw.githubusercontent.com/sanskrit-lexicon/csl-orig/master/v02/mw/mw.txt   # Monier-Williams (~50 MB)
+python3 mw_index.py mw.txt mw_index.json
 ```
 
-## Previewing on your own computer
+`vdata/`, `mw.txt` and `mw_index.json` are large; keep them out of the repository (they are listed in `.gitignore`).
 
-Opening `index.html` by double-clicking will not load the text (browsers block data files opened that way). Run a small local server instead:
+## Build
 
 ```bash
-python3 -m http.server 8000
+python3 parse_text.py source/nyayasutra-bhashya-gretil.txt parsed.json
+python3 build_data.py          # writes ../data/*.json
 ```
 
-and visit <http://localhost:8000>.
+## Fixing things
 
-## Sources and licence
+- **A meaning is wrong or too dictionary-like** — add or edit the word in `curated.json` (key in IAST, dictionary form):
+  `"vyāpti": {"m": "invariable concomitance", "n": "Not used by Gautama himself; central in later Nyāya."}`
+- **A word is split wrongly** — add it to `overrides.json`, keyed by the exact form in the text (IAST). Each part is `[form, dictionary form, grammar]`:
+  ```json
+  "saṃyogāvyucchedaḥ": {"p": [["saṃyoga", "saṃyoga", "compound member (stem)"],
+                              ["avyucchedaḥ", "avyuccheda", "nom. sg. m."]]}
+  ```
+  Overridden words are marked as verified on the site.
+- **A typo in the source text** — add it to the `TYPO` table at the top of `parse_text.py`.
 
-- **Text**: GRETIL e-text of the Nyāyasūtra with Vātsyāyana’s Bhāṣya (input by the Indology Student Team, University of Tokyo), based on the edition of Taranatha Nyaya-Tarkatirtha, Calcutta Sanskrit Series 18 & 19 (1936–1944). Licensed **CC BY-NC-SA 4.0** — this site must therefore stay non-commercial and keep the same licence. About eighty obvious keying errors have been corrected (listed in `build/parse_text.py`).
-- **Dictionary**: Monier-Williams, *A Sanskrit-English Dictionary* (1899), digitised by the Cologne Digital Sanskrit Dictionaries (`sanskrit-lexicon/csl-orig`).
-- **Morphology**: the Vidyut Sanskrit toolkit by Ambuda.
-- **Fonts**: Tiro Devanagari Sanskrit and Schibsted Grotesk (SIL Open Font Licence), loaded from Google Fonts.
-
-The word analysis is automatic and will sometimes be wrong, especially in the commentary; uncertain words have a dotted underline on the site. Corrections are welcome — see `build/README.md`.
+Then run the two build commands again and commit the changed files in `data/`.
