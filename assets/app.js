@@ -1,4 +1,4 @@
-/* Sanskrit Depository — reader for the Nyāyasūtra with Vātsyāyana's Bhāṣya.
+/* Sanskrit Depository — reader for Sanskrit texts with tap-to-analyse words.
    Plain JavaScript, no build step: works as-is on GitHub Pages. */
 (() => {
   "use strict";
@@ -12,11 +12,12 @@
   };
 
   const state = {
-    index: null,
-    glossary: null,
-    glossaryPromise: null,
-    chapters: new Map(),
-    current: null,          // current chapter id
+    library: null,
+    texts: new Map(),        // tid -> promise of index
+    glossaries: new Map(),   // tid -> promise of glossary
+    glossary: null,          // glossary of the text being read
+    gtid: null,
+    chapters: new Map(),     // "tid/cid" -> promise of chapter
     pop: { anchor: null, entry: null, deva: "" },
   };
 
@@ -24,6 +25,7 @@
   const pop = $("#pop");
   const popInner = $("#popInner");
   const scrim = $("#scrim");
+  const brandSub = $("#brandSub");
 
   /* ------------------------------------------------------------------ data */
   async function getJSON(url) {
@@ -31,27 +33,38 @@
     if (!r.ok) throw new Error(`Could not load ${url} (${r.status})`);
     return r.json();
   }
-  function loadGlossary() {
-    if (!state.glossaryPromise) {
-      state.glossaryPromise = getJSON("data/glossary.json").then((g) => (state.glossary = g));
-    }
-    return state.glossaryPromise;
+  function loadText(tid) {
+    if (!state.texts.has(tid)) state.texts.set(tid, getJSON(`data/${tid}/index.json`));
+    return state.texts.get(tid);
   }
-  async function loadChapter(id) {
-    if (!state.chapters.has(id)) state.chapters.set(id, getJSON(`data/nyaya-${id}.json`));
-    return state.chapters.get(id);
+  function loadGlossary(tid) {
+    if (!state.glossaries.has(tid)) state.glossaries.set(tid, getJSON(`data/${tid}/glossary.json`));
+    return state.glossaries.get(tid);
+  }
+  function useGlossary(tid) {
+    if (state.gtid === tid && state.glossary) return Promise.resolve(state.glossary);
+    state.gtid = tid;
+    state.glossary = null;
+    return loadGlossary(tid).then((g) => { if (state.gtid === tid) state.glossary = g; return g; });
+  }
+  function loadChapter(tid, cid) {
+    const k = `${tid}/${cid}`;
+    if (!state.chapters.has(k)) state.chapters.set(k, getJSON(`data/${tid}/${cid}.json`));
+    return state.chapters.get(k);
   }
 
   /* ------------------------------------------------------------------ settings */
   const settings = {
     fs: store.get("sd-fs", 1),
     iast: store.get("sd-iast", true),
-    bh: store.get("sd-bh", true),
+    hidden: new Set(store.get("sd-hidden", store.get("sd-bh", true) ? [] : ["bhasya"])),
   };
+  const layerStyle = document.createElement("style");
+  document.head.appendChild(layerStyle);
   function applySettings() {
     document.documentElement.style.setProperty("--fs", settings.fs);
     view.classList.toggle("hide-iast", !settings.iast);
-    view.classList.toggle("hide-bh", !settings.bh);
+    layerStyle.textContent = [...settings.hidden].map((k) => `#view [data-l="${k}"]{display:none}`).join("\n");
   }
   $("#sizeUp").addEventListener("click", () => { settings.fs = Math.min(1.4, +(settings.fs + 0.08).toFixed(2)); store.set("sd-fs", settings.fs); applySettings(); });
   $("#sizeDown").addEventListener("click", () => { settings.fs = Math.max(0.8, +(settings.fs - 0.08).toFixed(2)); store.set("sd-fs", settings.fs); applySettings(); });
@@ -61,6 +74,48 @@
     root.dataset.theme = dark ? "light" : "dark";
     try { localStorage.setItem("sd-theme", root.dataset.theme); } catch (e) {}
   });
+
+  /* ------------------------------------------------------------------ helpers */
+  const ROMAN = ["", "I", "II", "III", "IV", "V"];
+  const ADH_DEVA = { "Adhyāya I": "प्रथमोऽध्यायः", "Adhyāya II": "द्वितीयोऽध्यायः", "Adhyāya III": "तृतीयोऽध्यायः", "Adhyāya IV": "चतुर्थोऽध्यायः", "Adhyāya V": "पञ्चमोऽध्यायः" };
+  const sec = (ix) => (ix.root === "section" ? "§" : "");
+  function rangeText(ix, c) {
+    if (!c.range) return "";
+    const [a, b] = c.range;
+    return sec(ix) + (a === b ? a : `${a}–${b}`);
+  }
+  // chapters grouped for the contents and the sidebar
+  function groupsOf(ix) {
+    const out = [];
+    const byKey = new Map();
+    for (const c of ix.chapters) {
+      let key, label, dv;
+      if (c.group) { key = c.group; label = c.group; dv = ADH_DEVA[c.group] || ""; }
+      else if (c.appendix) { key = "appendix"; label = "Appendix · Prasāraṇā"; dv = "प्रसारणा"; }
+      else { key = c.base || c.id; label = c.title; dv = c.dt || ""; }
+      if (!byKey.has(key)) { const g = { key, label, dv, items: [] }; byKey.set(key, g); out.push(g); }
+      byKey.get(key).items.push(c);
+    }
+    return out;
+  }
+  function entryLabel(c, g) {
+    const part = c.part ? (c.part[1] > 1 ? ` · part ${c.part[0]}` : "") : "";
+    if (c.short) return c.short + part;
+    if (c.appendix) return c.title.replace(/^Prasāraṇā on the /, "") + part;
+    if (g && g.items.length > 1) return `Part ${c.part ? c.part[0] : 1}`;
+    return c.title;
+  }
+  function entrySmall(ix, c) {
+    if (c.range) return rangeText(ix, c);
+    if (c.part) {   // a page that only continues the commentary on the previous page's last sūtra
+      const i = ix.chapters.indexOf(c);
+      for (let j = i - 1; j >= 0 && (ix.chapters[j].base || ix.chapters[j].id) === c.base; j--) if (ix.chapters[j].range) return `${sec(ix)}${ix.chapters[j].range[1]} (cont.)`;
+    }
+    const pages = c.nav.filter((n) => n[0] === "g");
+    if (pages.length) return `pp. ${pages[0][2].replace(/^p\.\s*/, "")}–${pages[pages.length - 1][2].replace(/^p\.\s*/, "")}`;
+    return "";
+  }
+  const href = (tid, cid, anchor) => `#/${tid}/${cid}${anchor ? "/" + anchor : ""}`;
 
   /* ------------------------------------------------------------------ sidebar */
   const sidebar = $("#sidebar");
@@ -73,101 +128,161 @@
   menuBtn.addEventListener("click", () => setMenu(!sidebar.classList.contains("open")));
   scrim.addEventListener("click", () => { setMenu(false); closePop(); });
 
-  const ROMAN = ["", "I", "II", "III", "IV", "V"];
-  function renderSidebar(chapterId, chapter) {
-    const byAdh = {};
-    for (const c of state.index.chapters) (byAdh[c.adhyaya] ||= []).push(c);
+  function renderSidebar(ix, chapterId) {
     let h = "";
-    for (const a of Object.keys(byAdh)) {
-      h += `<div class="side-adh"><h3>Adhyāya ${ROMAN[a]}</h3>`;
-      for (const c of byAdh[a]) {
-        const on = c.id === chapterId;
-        h += `<a class="side-ahn" href="#/${c.id}" ${on ? 'aria-current="page"' : ""}>Āhnika ${c.ahnika}<small>${c.nsutras} sūtras</small></a>`;
-        if (on) {
-          h += `<ol class="side-sutras">`;
-          for (const [sid, dv] of c.sutras) {
-            h += `<li><a href="#/${sid}" data-sid="${sid}"><span>${sid}</span><span>${esc(dv)}</span></a></li>`;
-          }
-          h += `</ol>`;
+    if (!ix) {
+      // library level: list the texts
+      for (const d of state.library.darshanas) {
+        h += `<div class="side-adh"><h3>${esc(d.name)}</h3>`;
+        for (const tid of d.texts) {
+          const t = state.library.texts[tid];
+          if (!t) continue;
+          h += `<a class="side-ahn side-text" href="#/${tid}"><span>${esc(t.short)}</span></a>`;
         }
+        h += `</div>`;
       }
-      h += `</div>`;
+    } else {
+      h += `<a class="side-back" href="#/">← All texts</a>`;
+      h += `<a class="side-title${chapterId === "home" ? " on" : ""}" href="#/${ix.id}"><b>${esc(ix.short)}</b><span lang="sa">${esc(ix.deva)}</span></a>`;
+      for (const g of groupsOf(ix)) {
+        const solo = g.items.length === 1 && entryLabel(g.items[0], g) === g.label;
+        h += solo ? `<div class="side-adh solo">` : `<div class="side-adh"><h3>${esc(g.label)}</h3>`;
+        for (const c of g.items) {
+          const on = c.id === chapterId;
+          h += `<a class="side-ahn" href="${href(ix.id, c.id)}" ${on ? 'aria-current="page"' : ""}>${esc(entryLabel(c, g))}<small>${esc(entrySmall(ix, c))}</small></a>`;
+          if (on && c.nav.length) {
+            h += `<ol class="side-sutras">`;
+            for (const n of c.nav) {
+              const [kind, anchor, dv, , label] = n;
+              if (kind === "s") h += `<li><a href="${href(ix.id, c.id, anchor)}" data-sid="${esc(anchor)}"><span>${esc(sec(ix) + label)}</span><span lang="sa">${esc(dv)}</span></a></li>`;
+              else if (kind === "h") h += `<li class="nh"><a href="${href(ix.id, c.id, anchor)}" data-sid="${esc(anchor)}"><span></span><span lang="sa">${esc(dv)}</span></a></li>`;
+              else h += `<li class="ng"><a href="${href(ix.id, c.id, anchor)}" data-sid="${esc(anchor)}"><span>${esc(dv)}</span><span></span></a></li>`;
+            }
+            h += `</ol>`;
+          }
+        }
+        h += `</div>`;
+      }
     }
-    h += `<div class="side-adh"><a class="side-ahn" href="#/about" ${chapterId === "about" ? 'aria-current="page"' : ""}>About this edition</a></div>`;
+    h += `<div class="side-adh"><a class="side-ahn" href="#/about" ${chapterId === "about" ? 'aria-current="page"' : ""}>About this depository</a></div>`;
     $("#sideInner").innerHTML = h;
     const on = $(".side-ahn[aria-current]", sidebar);
     if (on && chapterId !== "about") on.scrollIntoView({ block: "nearest" });
   }
 
   /* ------------------------------------------------------------------ text rendering */
-  const NOSPACE_BEFORE = new Set([",", ";", "?", "!", ":", "”", "।", "॥"]);
+  const NOSPACE_BEFORE = new Set([",", ";", "?", "!", ":", "”", "।", "॥", ")", "."]);
   function wordsHTML(tokens, lex) {
     let out = "";
-    let prevOpen = false;
-    tokens.forEach((t, i) => {
+    let prevOpen = true;
+    tokens.forEach((t) => {
       if (typeof t === "string") {
-        if (t === "“") { out += (i ? " " : "") + t; prevOpen = true; return; }
-        if (/^॥.*॥$/.test(t)) { out += " " + t; return; }
-        out += (NOSPACE_BEFORE.has(t) ? "" : " ") + t;
+        if (t === "\n") { out += "<br>"; prevOpen = true; return; }
+        if (t === "“" || t === "(") { out += (prevOpen ? "" : " ") + t; prevOpen = true; return; }
+        if (/^॥.*॥$/.test(t)) { out += " " + t; prevOpen = false; return; }
+        out += (NOSPACE_BEFORE.has(t) || prevOpen ? "" : " ") + esc(t);
+        prevOpen = false;
         return;
       }
       const [dv, k] = t;
       const e = lex[k];
       let cls = "w";
       if (e && (!e.p.length || e.q)) cls += " low";
-      out += (i && !prevOpen ? " " : "") + `<span class="${cls}" data-k="${k}" tabindex="-1">${dv}</span>`;
+      out += (prevOpen ? "" : " ") + `<span class="${cls}" data-k="${k}" tabindex="-1">${dv}</span>`;
       prevOpen = false;
     });
     return out.trim();
   }
 
-  function renderChapter(ch, meta) {
-    const idx = state.index.chapters.findIndex((c) => c.id === meta.id);
-    const prev = state.index.chapters[idx - 1];
-    const next = state.index.chapters[idx + 1];
+  function renderChapter(ix, ch, meta) {
+    const idx = ix.chapters.findIndex((c) => c.id === meta.id);
+    const prev = ix.chapters[idx - 1];
+    const next = ix.chapters[idx + 1];
+    const layers = new Map((ix.layers || []).map((l) => [l.k, l]));
+    const multi = layers.size > 1;
+    const present = new Set();
+    let hasRoot = false;
+    for (const u of ch.units) for (const sg of u.segs) { if (sg.l && layers.has(sg.l)) present.add(sg.l); if (sg.t === "s") hasRoot = true; }
+    const groups = groupsOf(ix);
+    const g = groups.find((x) => x.items.includes(meta));
+    const crumb = [ix.short, g && g.label !== meta.title ? g.label : "", entryLabel(meta, g) !== (g && g.label) ? entryLabel(meta, g) : ""].filter(Boolean).join(" · ");
+    const rt = rangeText(ix, meta);
+    let desc = rt ? `${ix.root === "sūtra" ? "Sūtras" : "Sections"} ${rt}. ` : "";
+    desc += "Tap any word for its meaning; long words open with their sandhi split.";
     let h = `<header class="ch-head">
-      <p class="crumb">Adhyāya ${ROMAN[meta.adhyaya]}, Āhnika ${meta.ahnika}</p>
-      <h1>${esc(meta.topic)}</h1>
-      <p>Sūtras ${meta.sutras[0][0]}–${meta.sutras[meta.sutras.length - 1][0]}. Tap any word for its meaning; long words open with their sandhi split.</p>
+      <p class="crumb">${esc(crumb)}</p>
+      <h1>${esc(meta.topic || meta.title)}</h1>
+      <p>${esc(desc)}</p>
       <div class="ch-controls">
-        <button class="chip-toggle" id="tIast" aria-pressed="${settings.iast}"><span class="dot"></span>Transliteration</button>
-        <button class="chip-toggle" id="tBh" aria-pressed="${settings.bh}"><span class="dot"></span>Commentary</button>
+        ${hasRoot ? `<button class="chip-toggle" id="tIast" aria-pressed="${settings.iast}"><span class="dot"></span>Transliteration</button>` : ""}
+        ${[...layers.values()].filter((l) => present.has(l.k)).map((l) => `<button class="chip-toggle" data-layer="${l.k}" aria-pressed="${!settings.hidden.has(l.k)}"><span class="dot"></span>${esc(layers.size === 1 ? "Commentary" : l.name)}</button>`).join("")}
       </div>
     </header>`;
     for (const u of ch.units) {
-      h += `<section class="unit" id="u-${u.id}">`;
+      h += `<section class="unit" id="u-${esc(u.id)}">`;
+      let lastLayer = null;
       for (const sg of u.segs) {
+        if (sg.t === "g") { h += `<p class="pg" id="g-${sg.id}">${esc(sg.x)}</p>`; continue; }
+        if (sg.t === "k") { h += `<p class="cont">${sg.x ? esc(sec(ix) + sg.x) + " " : ""}continued</p>`; continue; }
         const words = wordsHTML(sg.w, ch.lex);
+        const L = sg.l && layers.has(sg.l) ? sg.l : null;
+        if ((sg.t === "b" || sg.t === "v") && L) {
+          if (multi && L !== lastLayer) {
+            const l = layers.get(L);
+            h += `<p class="bh-label" data-l="${L}"><span lang="sa">${esc(l.deva)}</span> ${esc(l.name)}<small>${esc(l.by)}</small></p>`;
+          }
+          lastLayer = L;
+          h += `<p class="bh${sg.t === "v" ? " verse" : ""}" data-l="${L}" data-words tabindex="0" lang="sa">${words}</p>`;
+          continue;
+        }
         if (sg.t === "s") {
-          h += `<div class="sutra" id="s-${sg.id}">
-            <a class="sn" href="#/${sg.id}" aria-label="Sūtra ${sg.id}">${sg.id}</a>
-            <p class="st" data-words tabindex="0" lang="sa">${words}</p>
+          lastLayer = null;
+          const long = sg.i.length > 180 ? " long" : "";
+          h += `<div class="sutra" id="s-${esc(sg.id)}">
+            <a class="sn" href="${href(ix.id, meta.id, sg.id)}" aria-label="${ix.root === "sūtra" ? "Sūtra" : "Section"} ${esc(sg.n)}">${esc(sec(ix) + sg.n)}</a>
+            <p class="st${long}${sg.verse ? " verse" : ""}" data-words tabindex="0" lang="sa">${words}</p>
             <p class="tl" lang="sa-Latn">${esc(sg.i)}</p>
           </div>`;
+        } else if (sg.t === "h") {
+          lastLayer = null;
+          h += `<h3 class="sec-h" id="h-${sg.id}" data-words tabindex="0" lang="sa">${words}</h3>`;
         } else if (sg.t === "c") {
           h += `<p class="colophon" data-words tabindex="0" lang="sa">${words}</p>`;
         } else {
-          h += `<p class="bh" data-words tabindex="0" lang="sa">${words}</p>`;
+          h += `<p class="bh main${sg.t === "v" ? " verse" : ""}" data-words tabindex="0" lang="sa">${words}</p>`;
         }
       }
       h += `</section>`;
     }
-    h += `<nav class="pager" aria-label="Āhnikas">
-      ${prev ? `<a href="#/${prev.id}"><small>Previous</small>${prev.title}</a>` : ""}
-      ${next ? `<a class="next" href="#/${next.id}"><small>Next</small>${next.title}</a>` : ""}
+    h += `<nav class="pager" aria-label="Chapters">
+      ${prev ? `<a href="${href(ix.id, prev.id)}"><small>Previous</small>${esc(pagerLabel(ix, prev))}</a>` : ""}
+      ${next ? `<a class="next" href="${href(ix.id, next.id)}"><small>Next</small>${esc(pagerLabel(ix, next))}</a>` : ""}
     </nav>`;
     view.innerHTML = h;
-    view.dataset.chapter = meta.id;
-    $("#tIast").addEventListener("click", (ev) => { settings.iast = !settings.iast; store.set("sd-iast", settings.iast); ev.currentTarget.setAttribute("aria-pressed", settings.iast); applySettings(); });
-    $("#tBh").addEventListener("click", (ev) => { settings.bh = !settings.bh; store.set("sd-bh", settings.bh); ev.currentTarget.setAttribute("aria-pressed", settings.bh); applySettings(); });
-    observeSutras();
+    view.dataset.chapter = `${ix.id}/${meta.id}`;
+    view.dataset.text = ix.id;
+    const ti = $("#tIast");
+    if (ti) ti.addEventListener("click", (ev) => { settings.iast = !settings.iast; store.set("sd-iast", settings.iast); ev.currentTarget.setAttribute("aria-pressed", settings.iast); applySettings(); });
+    $$("[data-layer]", view).forEach((b) => b.addEventListener("click", (ev) => {
+      const k = ev.currentTarget.dataset.layer;
+      if (settings.hidden.has(k)) settings.hidden.delete(k); else settings.hidden.add(k);
+      store.set("sd-hidden", [...settings.hidden]);
+      ev.currentTarget.setAttribute("aria-pressed", !settings.hidden.has(k));
+      applySettings();
+    }));
+    observeAnchors();
+  }
+  function pagerLabel(ix, c) {
+    const g = groupsOf(ix).find((x) => x.items.includes(c));
+    const e = entryLabel(c, g);
+    return g && g.label !== e && !c.short ? `${g.label} · ${e}` : c.title + (c.part && c.part[1] > 1 ? ` · part ${c.part[0]}` : "");
   }
 
-  let sutraObserver = null;
-  function observeSutras() {
-    if (sutraObserver) sutraObserver.disconnect();
+  let anchorObserver = null;
+  function observeAnchors() {
+    if (anchorObserver) anchorObserver.disconnect();
     if (!("IntersectionObserver" in window)) return;
-    sutraObserver = new IntersectionObserver((entries) => {
+    anchorObserver = new IntersectionObserver((entries) => {
       for (const en of entries) {
         if (!en.isIntersecting) continue;
         const sid = en.target.id.slice(2);
@@ -176,28 +291,36 @@
         if (a) { a.classList.add("on"); a.scrollIntoView({ block: "nearest" }); }
       }
     }, { rootMargin: "-80px 0px -70% 0px" });
-    $$(".sutra", view).forEach((s) => sutraObserver.observe(s));
+    $$(".sutra, .sec-h, .pg", view).forEach((s) => anchorObserver.observe(s));
   }
 
   /* ------------------------------------------------------------------ home */
   async function renderHome() {
     view.innerHTML = $("#tplHome").innerHTML;
     view.dataset.chapter = "home";
-    renderSidebar("home");
-    let toc = "";
-    const byAdh = {};
-    for (const c of state.index.chapters) (byAdh[c.adhyaya] ||= []).push(c);
-    const ADH_DEVA = ["", "प्रथमोऽध्यायः", "द्वितीयोऽध्यायः", "तृतीयोऽध्यायः", "चतुर्थोऽध्यायः", "पञ्चमोऽध्यायः"];
-    for (const a of Object.keys(byAdh)) {
-      toc += `<li><div class="adh">${ADH_DEVA[a]}<small>Adhyāya ${ROMAN[a]}</small></div><div class="ahns">`;
-      for (const c of byAdh[a]) {
-        toc += `<a class="ahn" href="#/${c.id}"><b>Āhnika ${c.ahnika}</b><span>${esc(c.topic)}</span><i>${c.sutras[0][0]}–${c.sutras[c.sutras.length - 1][0]}</i></a>`;
+    view.dataset.text = "";
+    brandSub.textContent = "Sanskrit texts you can read word by word";
+    renderSidebar(null, "home");
+    let lib = "";
+    for (const d of state.library.darshanas) {
+      lib += `<section class="darshana"><div class="darshana-head"><h2><span lang="sa">${esc(d.deva)}</span> ${esc(d.name)}</h2><p>${esc(d.blurb)}</p></div><ol class="texts">`;
+      for (const tid of d.texts) {
+        const t = state.library.texts[tid];
+        if (!t) continue;
+        const count = t.root === "sūtra" ? `${t.nroots} sūtras` : t.root === "section" ? `${t.nroots} sections` : `${t.nchapters} vādas`;
+        lib += `<li><a class="text-card" href="#/${tid}">
+          <span class="tc-deva" lang="sa">${esc(t.deva)}</span>
+          <b>${esc(t.title)}</b>
+          <span class="tc-by">${esc(t.author)}</span>
+          <span class="tc-blurb">${esc(t.blurb)}</span>
+          <i>${esc(count)}</i></a></li>`;
       }
-      toc += `</div></li>`;
+      lib += `</ol></section>`;
     }
-    $("#toc").innerHTML = toc;
+    $("#library").innerHTML = lib;
 
-    const ch = await loadChapter("1.1");
+    await useGlossary("nyaya");
+    const ch = await loadChapter("nyaya", "1.1");
     const s1 = ch.units[0].segs.find((s) => s.t === "s");
     const box = $("#heroSutra");
     if (!box) return;
@@ -217,43 +340,90 @@
     box.addEventListener("click", (ev) => {
       const b = ev.target.closest("button");
       if (!b) return;
+      useGlossary("nyaya");
       const e = ch.lex[+b.dataset.k];
       $$("button.sel", box).forEach((x) => x.classList.remove("sel"));
       b.classList.add("sel");
       if (b.dataset.part !== undefined) {
         const i = +b.dataset.part, p = e.p[i];
-        openPop(b, { w: p.u, p: [p] }, esc(p.d), { context: `Category ${i + 1} of the 16 in the opening compound. <a href="#/1.1">Read the sūtra and commentary</a>` });
+        openPop(b, { w: p.u, p: [p] }, esc(p.d), { context: `Category ${i + 1} of the 16 in the opening compound. <a href="#/nyaya/1.1">Read the sūtra and commentary</a>` });
       } else {
         openPop(b, e, b.textContent);
       }
     });
   }
 
-  /* ------------------------------------------------------------------ about */
-  function renderAbout() {
-    renderSidebar("about");
-    view.dataset.chapter = "about";
-    view.innerHTML = `<article class="prose">
-      <h1>About this edition</h1>
-      <p>This is a reading edition of the <b>Nyāyasūtra</b> of Gautama (Akṣapāda), the root text of the Nyāya school of Indian logic and epistemology, with the complete <b>Nyāyabhāṣya</b> of Vātsyāyana (Pakṣilasvāmin). Every Sanskrit word on the site can be tapped to see how it is built and what it means.</p>
+  /* ------------------------------------------------------------------ text home */
+  function renderTextHome(ix) {
+    renderSidebar(ix, "home");
+    view.dataset.chapter = "text";
+    view.dataset.text = ix.id;
+    let toc = "";
+    for (const g of groupsOf(ix)) {
+      if (g.items.length === 1 && entryLabel(g.items[0], g) === g.label) {
+        const c = g.items[0];
+        const heads = c.nav.filter((n) => n[0] === "h").slice(0, 4).map((n) => n[2]).join(" · ");
+        toc += `<li><div class="adh"><span lang="sa">${esc(g.dv || "")}</span><small>${esc(entrySmall(ix, c))}</small></div><div class="ahns">
+          <a class="ahn" href="${href(ix.id, c.id)}"><b>${esc(c.title)}</b><span>${esc(c.topic || "")}${heads ? `<em lang="sa">${esc(heads)}</em>` : ""}</span></a></div></li>`;
+        continue;
+      }
+      toc += `<li><div class="adh"><span lang="sa">${esc(g.dv)}</span><small>${esc(g.label)}</small></div><div class="ahns">`;
+      for (const c of g.items) {
+        const lab = entryLabel(c, g);
+        const topic = c.part && c.part[0] > 1 ? "" : c.topic;
+        const heads = c.nav.filter((n) => n[0] === "h").slice(0, 4).map((n) => n[2]).join(" · ");
+        toc += `<a class="ahn" href="${href(ix.id, c.id)}"><b>${esc(lab === g.label ? (c.short || "Read") : lab)}</b><span>${esc(topic || "")}${heads ? `<em lang="sa">${esc(heads)}</em>` : ""}</span><i>${esc(entrySmall(ix, c))}</i></a>`;
+      }
+      toc += `</div></li>`;
+    }
+    const first = ix.chapters[0];
+    view.innerHTML = `<section class="text-hero">
+        <p class="hero-kicker">${esc(state.library.darshanas.find((d) => d.texts.includes(ix.id)).name)}</p>
+        <p class="th-deva" lang="sa">${esc(ix.deva)}</p>
+        <h1>${esc(ix.title)}</h1>
+        <p class="th-by">${esc(ix.author)}</p>
+        <p class="th-blurb">${esc(ix.blurb)}</p>
+        ${ix.layers && ix.layers.length > 1 ? `<ul class="th-layers">${ix.layers.map((l) => `<li><span lang="sa">${esc(l.deva)}</span> <b>${esc(l.name)}</b> — ${esc(l.by)}</li>`).join("")}</ul>` : ""}
+        ${ix.caution ? `<p class="caution">${esc(ix.caution)}</p>` : ""}
+        <div class="hero-actions"><a class="btn primary" href="${href(ix.id, first.id)}">Start reading</a><a class="btn" href="#/about">How the word analysis works</a></div>
+      </section>
+      <section class="contents" aria-labelledby="contentsTitle">
+        <h2 id="contentsTitle">Contents</h2>
+        <ol class="toc">${toc}</ol>
+        <p class="src-note"><b>Source.</b> ${esc(ix.source)}</p>
+      </section>`;
+  }
 
-      <h2>The text</h2>
-      <p>The Sanskrit comes from the GRETIL e-text (input by the Indology Student Team, University of Tokyo), based on the edition of Taranatha Nyaya-Tarkatirtha, <i>Calcutta Sanskrit Series</i> 18 &amp; 19 (Calcutta, 1936–1944). Page markers and editorial notes were removed, the text was converted from romanisation to Devanagari, and around eighty obvious keying errors were corrected (for example <span class="dv">पृघग्</span> → <span class="dv">पृथग्</span>). It is distributed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 licence.</p>
+  /* ------------------------------------------------------------------ about */
+  async function renderAbout() {
+    renderSidebar(null, "about");
+    view.dataset.chapter = "about";
+    view.dataset.text = "";
+    const ids = state.library.darshanas.flatMap((d) => d.texts).filter((t) => state.library.texts[t]);
+    const ixs = await Promise.all(ids.map(loadText));
+    view.innerHTML = `<article class="prose">
+      <h1>About this depository</h1>
+      <p>The Sanskrit Depository is a reading room for Sanskrit texts. Each text is shown in Devanagari exactly as it is written, with sandhi intact; tap any word and a popup gives its sandhi split, its grammar and its English meaning.</p>
+
+      <h2>The texts</h2>
+      ${ixs.map((ix) => `<p><b>${esc(ix.title)}</b> <span class="dv">${esc(ix.deva)}</span>. ${esc(ix.source)}</p>`).join("")}
+      <p>All the e-texts come from GRETIL (Göttingen Register of Electronic Texts in Indian Languages) and are distributed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 licence. Page markers, footnote numerals and similar encoding debris were removed, and the romanised text was converted to Devanagari. Nothing was re-divided: where an e-text runs words together, as a Devanagari print does, so does the page here, and the split is shown only in the popup.</p>
 
       <h2>How a word is analysed</h2>
-      <p>Each word is split by reversing the rules of sandhi: the program tries every possible division of the word, restores the sounds that sandhi merged (for example <code>ā</code> → <code>a + a</code>, <code>e</code> → <code>a + i</code>, a final <code>d</code> → <code>t</code>), and keeps the reading in which every piece is a real Sanskrit word. The last piece is identified grammatically (case, number, tense, person) using the Vidyut morphological lexicon. Meanings come first from a glossary written for Nyāya, and otherwise from the Monier-Williams <i>Sanskrit–English Dictionary</i> (1899) as digitised by the Cologne Digital Sanskrit Dictionaries.</p>
+      <p>Each word is split by reversing the rules of sandhi: the program tries every possible division of the word, restores the sounds that sandhi merged (for example <code>ā</code> → <code>a + a</code>, <code>e</code> → <code>a + i</code>, a final <code>d</code> → <code>t</code>), and keeps the reading in which every piece is a real Sanskrit word. The last piece is identified grammatically (case, number, tense, person) using the Vidyut morphological lexicon. Meanings come first from glossaries written for Nyāya — one for the Nyāyasūtra and Bhāṣya, one for the technical vocabulary of the later texts — and otherwise from the Monier-Williams <i>Sanskrit–English Dictionary</i> (1899) as digitised by the Cologne Digital Sanskrit Dictionaries. For the Tarkasaṃgraha, the analysed (pada-pāṭha) version in the e-text guides where words and compound members divide.</p>
       <ul class="legend">
-        <li><span class="ptag c">Nyāya glossary</span><span>Meaning written for this text, giving the technical sense used in Nyāya (so <span class="dv">प्रमाण</span> is “means of valid knowledge”, not just “measure”).</span></li>
+        <li><span class="ptag c">Nyāya glossary</span><span>Meaning written for these texts, giving the technical sense used in Nyāya (so <span class="dv">प्रमाण</span> is “means of valid knowledge”, not just “measure”, and <span class="dv">अवच्छेदक</span> is “delimitor”).</span></li>
         <li><span class="ptag mw">Monier-Williams</span><span>Meaning taken from the dictionary. The first senses are shown; the sense intended here may be a later one.</span></li>
         <li><span class="ptag q">Check this analysis</span><span>The split or the grammar is uncertain. Words like this are shown with a dotted underline in the text.</span></li>
+        <li><span class="ptag c">Verified</span><span>The analysis was checked by hand.</span></li>
       </ul>
-      <p>The analysis is automatic and will sometimes be wrong, especially in the commentary. The sūtras themselves have been reviewed. Where a form is ambiguous (for example a final <span class="dv">-आन्</span> before a nasal may be an accusative plural or an ablative singular), the popup lists the other possible readings.</p>
+      <p>The analysis is automatic and will sometimes be wrong, especially in the commentaries and in the e-texts that were not proof-read. The sūtras of the Nyāyasūtra and the root text of the Tarkasaṃgraha have been reviewed. Where a form is ambiguous, the popup lists the other possible readings.</p>
 
       <h2>Keyboard</h2>
       <p>Press <b>Tab</b> to move to a paragraph, <b>Enter</b> to step into its words, <b>←</b> and <b>→</b> to move between words, <b>Enter</b> to open a word and <b>Esc</b> to close it.</p>
 
       <h2>Corrections and new texts</h2>
-      <p>The analysis is generated by the scripts in the <code>build</code> folder of the repository. To correct a word, add it to <code>build/overrides.json</code>; to improve a meaning, edit <code>build/curated.json</code>; then run the build again. The same pipeline can prepare other texts for the depository.</p>
+      <p>The analysis is generated by the scripts in the <code>build</code> folder of the repository. To correct a word, add it to <code>build/overrides.json</code>; to improve a meaning, edit <code>build/curated.json</code> or <code>build/curated_navya.json</code>; then run the build again. The same pipeline prepares new texts for the depository.</p>
     </article>`;
   }
 
@@ -368,7 +538,13 @@
     pop.hidden = false;
     position();
     if (matchMedia("(max-width: 680px)").matches) scrim.hidden = false;
-    if (!state.glossary) loadGlossary().then(() => { if (state.pop.entry === entry) { const c = $(".part[aria-pressed='true']", popInner); renderPop(c ? +c.dataset.i : opts.focusPart ?? null); } });
+    if (!state.glossary) {
+      const want = state.gtid;
+      loadGlossary(want).then((g) => {
+        if (state.gtid === want) state.glossary = g;
+        if (state.pop.entry === entry) { const c = $(".part[aria-pressed='true']", popInner); renderPop(c ? +c.dataset.i : opts.focusPart ?? null); }
+      });
+    }
     if (opts.keyboard) { const f = $(".part", popInner) || $("#popClose"); f && f.focus(); }
   }
 
@@ -398,13 +574,17 @@
     state.pop.anchor = null;
   }
 
+  function openWord(w, opts) {
+    const key = view.dataset.chapter;
+    const p = state.chapters.get(key);
+    if (!p) return;
+    useGlossary(view.dataset.text);
+    p.then((ch) => openPop(w, ch.lex[+w.dataset.k], w.innerHTML, opts));
+  }
+
   document.addEventListener("click", (ev) => {
     const w = ev.target.closest(".w");
-    if (w && view.contains(w)) {
-      const chId = view.dataset.chapter;
-      state.chapters.get(chId).then((ch) => openPop(w, ch.lex[+w.dataset.k], w.innerHTML));
-      return;
-    }
+    if (w && view.contains(w)) { openWord(w); return; }
     if (!pop.hidden && !pop.contains(ev.target) && !ev.target.closest("#heroSutra")) closePop(false);
   });
   window.addEventListener("resize", () => position());
@@ -430,7 +610,7 @@
         ev.preventDefault();
       } else if (ev.key === "Enter" || ev.key === " ") {
         ev.preventDefault();
-        state.chapters.get(view.dataset.chapter).then((ch) => openPop(t, ch.lex[+t.dataset.k], t.innerHTML, { keyboard: true }));
+        openWord(t, { keyboard: true });
       }
     }
   });
@@ -440,22 +620,37 @@
   const results = $("#searchResults");
   const fold = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9.ऀ-ॿ ]/g, "");
   let sel = -1;
-  function runSearch() {
+  let searchSeq = 0;
+  async function runSearch() {
     const q = search.value.trim();
-    if (!q || !state.index) { results.hidden = true; return; }
+    if (!q || !state.library) { results.hidden = true; return; }
+    const seq = ++searchSeq;
+    const cur = view.dataset.text;
+    const ids = cur ? [cur, ...state.library.darshanas.flatMap((d) => d.texts).filter((t) => t !== cur)] : state.library.darshanas.flatMap((d) => d.texts);
+    const ixs = await Promise.all(ids.filter((t) => state.library.texts[t]).map(loadText));
+    if (seq !== searchSeq) return;
     const fq = fold(q);
-    const isNum = /^\d+(\.\d*){0,2}$/.test(q);
+    const isNum = /^§?\d+(\.\d*){0,2}$/.test(q);
+    const qn = q.replace(/^§/, "");
     const hits = [];
-    for (const c of state.index.chapters) {
-      for (const [sid, dv, ia] of c.sutras) {
-        if (isNum ? sid === q || sid.startsWith(q.endsWith(".") ? q : q + ".") || sid === q : fold(ia).includes(fq) || dv.includes(q)) hits.push([sid, dv, ia]);
-        if (hits.length >= 40) break;
+    for (const ix of ixs) {
+      for (const c of ix.chapters) {
+        for (const n of c.nav) {
+          if (n[0] === "g") continue;
+          const [kind, anchor, dv, ia, label] = n;
+          let ok;
+          if (isNum) ok = kind === "s" && (label === qn || label.startsWith(qn.endsWith(".") ? qn : qn + "."));
+          else ok = fold(ia).includes(fq) || dv.includes(q);
+          if (ok && !(kind === "s" && hits.some((h) => h.ix === ix && h.label === label && h.kind === "s"))) hits.push({ ix, c, kind, anchor, dv, ia, label });
+          if (hits.length >= 60) break;
+        }
       }
     }
     sel = -1;
+    const many = new Set(hits.map((h) => h.ix.id)).size > 1;
     results.innerHTML = hits.length
-      ? hits.map(([sid, dv, ia]) => `<a href="#/${sid}" role="option"><span class="num">${sid}</span><span class="dv" lang="sa">${esc(dv)}</span><span class="tr">${esc(ia)}</span></a>`).join("")
-      : `<div class="empty">No sūtra matches “${esc(q)}”. Try a number such as 2.1.4, or part of a word in Devanagari or romanisation.</div>`;
+      ? hits.map((h) => `<a href="${href(h.ix.id, h.c.id, h.anchor)}" role="option"><span class="num">${h.kind === "s" ? esc(sec(h.ix) + h.label) : "—"}</span><span class="dv" lang="sa">${esc(h.dv)}</span><span class="tr">${many ? `<b>${esc(h.ix.short)}</b> · ` : ""}${esc(h.ia)}</span></a>`).join("")
+      : `<div class="empty">Nothing matches “${esc(q)}”. Try a number such as 2.1.4, or part of a word in Devanagari or romanisation.</div>`;
     results.hidden = false;
   }
   search.addEventListener("input", runSearch);
@@ -476,30 +671,48 @@
   results.addEventListener("click", () => { results.hidden = true; search.value = ""; });
 
   /* ------------------------------------------------------------------ router */
+  function notFound(msg) {
+    view.innerHTML = `<p class="loading">${msg} <a href="#/">Go to the contents</a>.</p>`;
+  }
   async function route() {
     closePop(false);
     setMenu(false);
-    const h = location.hash.replace(/^#\/?/, "");
+    const h = decodeURIComponent(location.hash.replace(/^#\/?/, ""));
     applySettings();
     if (!h) { await renderHome(); window.scrollTo(0, 0); return; }
-    if (h === "about") { renderAbout(); window.scrollTo(0, 0); return; }
-    const m = h.match(/^(\d)\.(\d)(?:[./](\d+))?$/);
-    if (!m) { view.innerHTML = `<p class="loading">That page doesn’t exist. <a href="#/">Go to the contents</a>.</p>`; return; }
-    const cid = `${m[1]}.${m[2]}`;
-    const meta = state.index.chapters.find((c) => c.id === cid);
-    if (!meta) { view.innerHTML = `<p class="loading">There is no Āhnika ${esc(cid)}. <a href="#/">Go to the contents</a>.</p>`; return; }
-    if (view.dataset.chapter !== cid) {
+    if (h === "about") { await renderAbout(); window.scrollTo(0, 0); return; }
+    // links from before the depository held more than one text: #/1.1, #/1.1.4
+    if (/^\d\.\d(?:[./]\d+)?$/.test(h)) { location.replace(`#/nyaya/${h.replace("/", ".")}`); return; }
+    const [tid, x, y] = h.split("/");
+    if (!state.library.texts[tid]) { notFound("That page doesn’t exist."); return; }
+    const ix = await loadText(tid);
+    brandSub.textContent = ix.title;
+    useGlossary(tid);
+    if (!x) { renderTextHome(ix); window.scrollTo(0, 0); $("#main").focus({ preventScroll: true }); return; }
+    let meta = ix.chapters.find((c) => c.id === x);
+    let anchor = y;
+    if (!meta) {
+      meta = ix.chapters.find((c) => c.nav.some((n) => n[1] === x));
+      anchor = x;
+      if (!meta) {   // a chapter that was split into parts: go to its first part
+        meta = ix.chapters.find((c) => c.base === x);
+        anchor = y;
+      }
+    }
+    if (!meta) { notFound(`There is no “${esc(x)}” in ${esc(ix.short)}.`); return; }
+    const key = `${tid}/${meta.id}`;
+    if (view.dataset.chapter !== key) {
       view.innerHTML = `<p class="loading">Loading ${esc(meta.title)}…</p>`;
-      renderSidebar(cid);
-      const ch = await loadChapter(cid);
-      renderChapter(ch, meta);
+      renderSidebar(ix, meta.id);
+      const ch = await loadChapter(tid, meta.id);
+      renderChapter(ix, ch, meta);
       applySettings();
     } else {
-      renderSidebar(cid);
-      observeSutras();
+      renderSidebar(ix, meta.id);
+      observeAnchors();
     }
-    if (m[3]) {
-      const el = document.getElementById(`s-${cid}.${m[3]}`);
+    if (anchor) {
+      const el = document.getElementById(`s-${anchor}`) || document.getElementById(`h-${anchor}`) || document.getElementById(`g-${anchor}`) || document.getElementById(`u-${anchor}`);
       if (el) {
         el.scrollIntoView({ block: "start" });
         el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
@@ -512,12 +725,11 @@
 
   async function init() {
     try {
-      state.index = await getJSON("data/index.json");
+      state.library = await getJSON("data/library.json");
     } catch (err) {
-      view.innerHTML = `<div class="prose"><h1>The text could not be loaded</h1><p>${esc(err.message)}.</p><p>If you opened <code>index.html</code> directly from your computer, the browser blocks the data files. Open the site through GitHub Pages, or run <code>python3 -m http.server</code> in this folder and visit <code>http://localhost:8000</code>.</p></div>`;
+      view.innerHTML = `<div class="prose"><h1>The texts could not be loaded</h1><p>${esc(err.message)}.</p><p>If you opened <code>index.html</code> directly from your computer, the browser blocks the data files. Open the site through GitHub Pages, or run <code>python3 -m http.server</code> in this folder and visit <code>http://localhost:8000</code>.</p></div>`;
       return;
     }
-    loadGlossary();
     window.addEventListener("hashchange", route);
     route();
   }

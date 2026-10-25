@@ -1,4 +1,1666 @@
 {
- "saṃyogāvyucchedaḥ": {"p": [["saṃyoga", "saṃyoga", "compound member (stem)"], ["avyucchedaḥ", "avyuccheda", "nom. sg. m."]]},
- "dṛṣṭādṛṣṭārthatvāt": {"p": [["dṛṣṭa", "dṛṣṭa", "compound member (stem)"], ["adṛṣṭārthatvāt", "adṛṣṭārthatva", "abl. sg. — abstract noun in -tva (‘-ness’)"]]}
+ "saṃyogāvyucchedaḥ": {
+  "p": [
+   [
+    "saṃyoga",
+    "saṃyoga",
+    "compound member (stem)"
+   ],
+   [
+    "avyucchedaḥ",
+    "avyuccheda",
+    "nom. sg. m."
+   ]
+  ]
+ },
+ "dṛṣṭādṛṣṭārthatvāt": {
+  "p": [
+   [
+    "dṛṣṭa",
+    "dṛṣṭa",
+    "compound member (stem)"
+   ],
+   [
+    "adṛṣṭārthatvāt",
+    "adṛṣṭārthatva",
+    "abl. sg. — abstract noun in -tva (‘-ness’)"
+   ]
+  ]
+ },
+ "vidhāya": {
+  "p": [
+   [
+    "vidhāya",
+    "vidhā",
+    "gerund (absolutive) — having made / performed"
+   ]
+  ]
+ },
+ "sapta": {
+  "p": [
+   [
+    "sapta",
+    "saptan",
+    "nom.-acc. pl. — seven"
+   ]
+  ]
+ },
+ "pañca": {
+  "p": [
+   [
+    "pañca",
+    "pañcan",
+    "nom.-acc. pl. — five"
+   ]
+  ]
+ },
+ "karmāṇi": {
+  "p": [
+   [
+    "karmāṇi",
+    "karman",
+    "nom.-acc. pl. n."
+   ]
+  ]
+ },
+ "ceti": {
+  "p": [
+   [
+    "ca",
+    "ca",
+    "indeclinable"
+   ],
+   [
+    "iti",
+    "iti",
+    "indeclinable"
+   ]
+  ]
+ },
+ "anantā": {
+  "p": [
+   [
+    "anantāḥ",
+    "ananta",
+    "nom. pl. m. (anantāḥ before a vowel)"
+   ]
+  ]
+ },
+ "eka": {
+  "p": [
+   [
+    "ekaḥ",
+    "eka",
+    "nom. sg. m. (ekaḥ before a vowel)"
+   ]
+  ]
+ },
+ "pradhvaṃsābhāvo": {
+  "p": [
+   [
+    "pradhvaṃsa",
+    "pradhvaṃsa",
+    "compound member (stem)"
+   ],
+   [
+    "abhāvaḥ",
+    "abhāva",
+    "nom. sg. m."
+   ]
+  ]
+ },
+ "nityānityā": {
+  "p": [
+   [
+    "nityā",
+    "nitya",
+    "nom. sg. f."
+   ],
+   [
+    "anityā",
+    "anitya",
+    "nom. sg. f."
+   ]
+  ]
+ },
+ "anityā": {
+  "p": [
+   [
+    "anityā",
+    "anitya",
+    "nom. sg. f."
+   ]
+  ]
+ },
+ "paramāṇurūpā": {
+  "p": [
+   [
+    "paramāṇu",
+    "paramāṇu",
+    "compound member (stem)"
+   ],
+   [
+    "rūpā",
+    "rūpa",
+    "nom. sg. f. — ‘having the form of’"
+   ]
+  ]
+ },
+ "kāryarūpā": {
+  "p": [
+   [
+    "kārya",
+    "kārya",
+    "compound member (stem)"
+   ],
+   [
+    "rūpā",
+    "rūpa",
+    "nom. sg. f. — ‘having the form of’"
+   ]
+  ]
+ },
+ "śītasparśavatya": {
+  "p": [
+   [
+    "śīta",
+    "śīta",
+    "compound member (stem)"
+   ],
+   [
+    "sparśavatyaḥ",
+    "sparśavat",
+    "nom. pl. f. (sparśavatyaḥ before a vowel) — having touch"
+   ]
+  ]
+ },
+ "āpaḥ": {
+  "p": [
+   [
+    "āpaḥ",
+    "ap",
+    "nom. pl. f. — water (always plural)"
+   ]
+  ]
+ },
+ "tā": {
+  "p": [
+   [
+    "tāḥ",
+    "tad",
+    "pronoun: nom. pl. f. (tāḥ before a voiced sound)"
+   ]
+  ]
+ },
+ "rasagrāhakaṃ": {
+  "p": [
+   [
+    "rasa",
+    "rasa",
+    "compound member (stem)"
+   ],
+   [
+    "grāhakam",
+    "grāhaka",
+    "nom.-acc. sg. n. — grasping"
+   ]
+  ]
+ },
+ "nāsāgravarti": {
+  "p": [
+   [
+    "nāsā",
+    "nāsā",
+    "compound member (stem)"
+   ],
+   [
+    "agra",
+    "agra",
+    "compound member (stem)"
+   ],
+   [
+    "varti",
+    "vartin",
+    "nom.-acc. sg. n. — situated in"
+   ]
+  ]
+ },
+ "jihvāgravarti": {
+  "p": [
+   [
+    "jihvā",
+    "jihvā",
+    "compound member (stem)"
+   ],
+   [
+    "agra",
+    "agra",
+    "compound member (stem)"
+   ],
+   [
+    "varti",
+    "vartin",
+    "nom.-acc. sg. n. — situated in"
+   ]
+  ]
+ },
+ "kṛṣṇatārāgravarti": {
+  "p": [
+   [
+    "kṛṣṇa",
+    "kṛṣṇa",
+    "compound member (stem)"
+   ],
+   [
+    "tārā",
+    "tārā",
+    "compound member (stem)"
+   ],
+   [
+    "agra",
+    "agra",
+    "compound member (stem)"
+   ],
+   [
+    "varti",
+    "vartin",
+    "nom.-acc. sg. n. — situated in"
+   ]
+  ]
+ },
+ "tvaksarvaśarīravarti": {
+  "p": [
+   [
+    "tvak",
+    "tvac",
+    "compound member (stem)"
+   ],
+   [
+    "sarva",
+    "sarva",
+    "compound member (stem)"
+   ],
+   [
+    "śarīra",
+    "śarīra",
+    "compound member (stem)"
+   ],
+   [
+    "varti",
+    "vartin",
+    "nom.-acc. sg. n. — situated in"
+   ]
+  ]
+ },
+ "saritsamudrādiḥ": {
+  "p": [
+   [
+    "sarit",
+    "sarit",
+    "compound member (stem)"
+   ],
+   [
+    "samudra",
+    "samudra",
+    "compound member (stem)"
+   ],
+   [
+    "ādiḥ",
+    "ādi",
+    "nom. sg. m. — ‘and so on’"
+   ]
+  ]
+ },
+ "tejasi": {
+  "p": [
+   [
+    "tejasi",
+    "tejas",
+    "loc. sg. n."
+   ]
+  ]
+ },
+ "vahnyādikam": {
+  "p": [
+   [
+    "vahni",
+    "vahni",
+    "compound member (stem)"
+   ],
+   [
+    "ādikam",
+    "ādika",
+    "nom.-acc. sg. n. — ‘and so on’"
+   ]
+  ]
+ },
+ "dvitvādikaṃ": {
+  "p": [
+   [
+    "dvitva",
+    "dvitva",
+    "compound member (stem)"
+   ],
+   [
+    "ādikam",
+    "ādika",
+    "nom.-acc. sg. n. — ‘and so on’"
+   ]
+  ]
+ },
+ "turīvemādikaṃ": {
+  "p": [
+   [
+    "turī",
+    "turī",
+    "compound member (stem)"
+   ],
+   [
+    "vema",
+    "veman",
+    "compound member (stem)"
+   ],
+   [
+    "ādikam",
+    "ādika",
+    "nom.-acc. sg. n. — ‘and so on’"
+   ]
+  ]
+ },
+ "abindhanaṃ": {
+  "p": [
+   [
+    "ab",
+    "ap",
+    "compound member (stem) — water"
+   ],
+   [
+    "indhanam",
+    "indhana",
+    "nom.-acc. sg. n. — ‘(whose) fuel (is water)’"
+   ]
+  ]
+ },
+ "caikā": {
+  "p": [
+   [
+    "ca",
+    "ca",
+    "indeclinable"
+   ],
+   [
+    "ekā",
+    "eka",
+    "nom. sg. f."
+   ]
+  ]
+ },
+ "vibhvī": {
+  "p": [
+   [
+    "vibhvī",
+    "vibhu",
+    "nom. sg. f. — all-pervading"
+   ]
+  ]
+ },
+ "paramātmā": {
+  "p": [
+   [
+    "paramātmā",
+    "paramātman",
+    "nom. sg. m."
+   ]
+  ]
+ },
+ "paramātmaika": {
+  "p": [
+   [
+    "paramātmā",
+    "paramātman",
+    "nom. sg. m."
+   ],
+   [
+    "ekaḥ",
+    "eka",
+    "nom. sg. m. (ekaḥ before a vowel)"
+   ]
+  ]
+ },
+ "sukhādyupalabdhisādhanam": {
+  "p": [
+   [
+    "sukha",
+    "sukha",
+    "compound member (stem)"
+   ],
+   [
+    "ādi",
+    "ādi",
+    "compound member (stem)"
+   ],
+   [
+    "upalabdhi",
+    "upalabdhi",
+    "compound member (stem)"
+   ],
+   [
+    "sādhanam",
+    "sādhana",
+    "nom.-acc. sg. n."
+   ]
+  ]
+ },
+ "śuklanīlapītaraktaharitakapiśacitrabhedāt": {
+  "p": [
+   [
+    "śukla",
+    "śukla",
+    "compound member (stem)"
+   ],
+   [
+    "nīla",
+    "nīla",
+    "compound member (stem)"
+   ],
+   [
+    "pīta",
+    "pīta",
+    "compound member (stem)"
+   ],
+   [
+    "rakta",
+    "rakta",
+    "compound member (stem)"
+   ],
+   [
+    "harita",
+    "harita",
+    "compound member (stem)"
+   ],
+   [
+    "kapiśa",
+    "kapiśa",
+    "compound member (stem)"
+   ],
+   [
+    "citra",
+    "citra",
+    "compound member (stem)"
+   ],
+   [
+    "bhedāt",
+    "bheda",
+    "abl. sg."
+   ]
+  ]
+ },
+ "madhurāmlalavaṇakaṭukaṣāyatiktabhedāt": {
+  "p": [
+   [
+    "madhura",
+    "madhura",
+    "compound member (stem)"
+   ],
+   [
+    "amla",
+    "amla",
+    "compound member (stem)"
+   ],
+   [
+    "lavaṇa",
+    "lavaṇa",
+    "compound member (stem)"
+   ],
+   [
+    "kaṭu",
+    "kaṭu",
+    "compound member (stem)"
+   ],
+   [
+    "kaṣāya",
+    "kaṣāya",
+    "compound member (stem)"
+   ],
+   [
+    "tikta",
+    "tikta",
+    "compound member (stem)"
+   ],
+   [
+    "bhedāt",
+    "bheda",
+    "abl. sg."
+   ]
+  ]
+ },
+ "surabhirasurabhiś": {
+  "p": [
+   [
+    "surabhiḥ",
+    "surabhi",
+    "nom. sg. m. — fragrant"
+   ],
+   [
+    "asurabhiḥ",
+    "asurabhi",
+    "nom. sg. m. — not fragrant"
+   ]
+  ]
+ },
+ "tvagindriyamātragrāhyo": {
+  "p": [
+   [
+    "tvak",
+    "tvac",
+    "compound member (stem)"
+   ],
+   [
+    "indriya",
+    "indriya",
+    "compound member (stem)"
+   ],
+   [
+    "mātra",
+    "mātra",
+    "compound member (stem)"
+   ],
+   [
+    "grāhyaḥ",
+    "grāhya",
+    "nom. sg. m. — to be grasped"
+   ]
+  ]
+ },
+ "pṛthivīvāyvoḥ": {
+  "p": [
+   [
+    "pṛthivī",
+    "pṛthivī",
+    "compound member (stem)"
+   ],
+   [
+    "vāyvoḥ",
+    "vāyu",
+    "gen.-loc. du."
+   ]
+  ]
+ },
+ "pṛthivyādicatuṣṭayamanovṛttīti": {
+  "p": [
+   [
+    "pṛthivī",
+    "pṛthivī",
+    "compound member (stem)"
+   ],
+   [
+    "ādi",
+    "ādi",
+    "compound member (stem)"
+   ],
+   [
+    "catuṣṭaya",
+    "catuṣṭaya",
+    "compound member (stem)"
+   ],
+   [
+    "mano",
+    "manas",
+    "compound member (stem)"
+   ],
+   [
+    "vṛtti",
+    "vṛtti",
+    "nom.-acc. sg. n. — occurring in"
+   ],
+   [
+    "iti",
+    "iti",
+    "indeclinable"
+   ]
+  ]
+ },
+ "pṛthivyādicatuṣṭayamanovṛttiḥ": {
+  "p": [
+   [
+    "pṛthivī",
+    "pṛthivī",
+    "compound member (stem)"
+   ],
+   [
+    "ādi",
+    "ādi",
+    "compound member (stem)"
+   ],
+   [
+    "catuṣṭaya",
+    "catuṣṭaya",
+    "compound member (stem)"
+   ],
+   [
+    "mano",
+    "manas",
+    "compound member (stem)"
+   ],
+   [
+    "vṛttiḥ",
+    "vṛtti",
+    "nom. sg. — occurring in"
+   ]
+  ]
+ },
+ "ghṛtādāvagnisaṃyogajanyaṃ": {
+  "p": [
+   [
+    "ghṛta",
+    "ghṛta",
+    "compound member (stem)"
+   ],
+   [
+    "ādau",
+    "ādi",
+    "loc. sg."
+   ],
+   [
+    "agni",
+    "agni",
+    "compound member (stem)"
+   ],
+   [
+    "saṃyoga",
+    "saṃyoga",
+    "compound member (stem)"
+   ],
+   [
+    "janyam",
+    "janya",
+    "nom.-acc. sg. n. — produced by"
+   ]
+  ]
+ },
+ "tadbhinnaṃ": {
+  "p": [
+   [
+    "tad",
+    "tad",
+    "compound member (stem)"
+   ],
+   [
+    "bhinnam",
+    "bhinna",
+    "nom.-acc. sg. n. — different from"
+   ]
+  ]
+ },
+ "rajata": {
+  "p": [
+   [
+    "rajate",
+    "rajata",
+    "loc. sg. (rajate before a vowel) — in silver"
+   ]
+  ]
+ },
+ "śuktāv": {
+  "p": [
+   [
+    "śuktau",
+    "śukti",
+    "loc. sg. f. — in mother-of-pearl"
+   ]
+  ]
+ },
+ "pratyakṣānumānopamānaśabdabhedāt": {
+  "p": [
+   [
+    "pratyakṣa",
+    "pratyakṣa",
+    "compound member (stem)"
+   ],
+   [
+    "anumāna",
+    "anumāna",
+    "compound member (stem)"
+   ],
+   [
+    "upamāna",
+    "upamāna",
+    "compound member (stem)"
+   ],
+   [
+    "śabda",
+    "śabda",
+    "compound member (stem)"
+   ],
+   [
+    "bhedāt",
+    "bheda",
+    "abl. sg."
+   ]
+  ]
+ },
+ "prāgabhāvapratiyogi": {
+  "p": [
+   [
+    "prāg",
+    "prāk",
+    "compound member (stem)"
+   ],
+   [
+    "abhāva",
+    "abhāva",
+    "compound member (stem)"
+   ],
+   [
+    "pratiyogi",
+    "pratiyogin",
+    "nom.-acc. sg. n. — counterpositive (of)"
+   ]
+  ]
+ },
+ "samavāyyasamavāyinimittabhedāt": {
+  "p": [
+   [
+    "samavāyi",
+    "samavāyin",
+    "compound member (stem)"
+   ],
+   [
+    "asamavāyi",
+    "asamavāyin",
+    "compound member (stem)"
+   ],
+   [
+    "nimitta",
+    "nimitta",
+    "compound member (stem)"
+   ],
+   [
+    "bhedāt",
+    "bheda",
+    "abl. sg."
+   ]
+  ]
+ },
+ "svagatarūpādeḥ": {
+  "p": [
+   [
+    "sva",
+    "sva",
+    "compound member (stem)"
+   ],
+   [
+    "gata",
+    "gata",
+    "compound member (stem)"
+   ],
+   [
+    "rūpa",
+    "rūpa",
+    "compound member (stem)"
+   ],
+   [
+    "ādeḥ",
+    "ādi",
+    "gen. sg."
+   ]
+  ]
+ },
+ "viśeṣaṇaviśeṣyabhāvaś": {
+  "p": [
+   [
+    "viśeṣaṇa",
+    "viśeṣaṇa",
+    "compound member (stem)"
+   ],
+   [
+    "viśeṣya",
+    "viśeṣya",
+    "compound member (stem)"
+   ],
+   [
+    "bhāvaḥ",
+    "bhāva",
+    "nom. sg. m."
+   ]
+  ]
+ },
+ "viśeṣaṇaviśeṣyabhāvaḥ": {
+  "p": [
+   [
+    "viśeṣaṇa",
+    "viśeṣaṇa",
+    "compound member (stem)"
+   ],
+   [
+    "viśeṣya",
+    "viśeṣya",
+    "compound member (stem)"
+   ],
+   [
+    "bhāvaḥ",
+    "bhāva",
+    "nom. sg. m."
+   ]
+  ]
+ },
+ "guṇaguṇinoś": {
+  "p": [
+   [
+    "guṇa",
+    "guṇa",
+    "compound member (stem)"
+   ],
+   [
+    "guṇinoḥ",
+    "guṇin",
+    "gen.-loc. du. — (of) the qualified thing"
+   ]
+  ]
+ },
+ "ghaṭābhāvavad": {
+  "p": [
+   [
+    "ghaṭa",
+    "ghaṭa",
+    "compound member (stem)"
+   ],
+   [
+    "abhāvavat",
+    "abhāvavat",
+    "nom.-acc. sg. n. — possessing the absence (of)"
+   ]
+  ]
+ },
+ "parvata": {
+  "p": [
+   [
+    "parvataḥ",
+    "parvata",
+    "nom. sg. m. (parvataḥ before a vowel)"
+   ]
+  ]
+ },
+ "parvato": {
+  "p": [
+   [
+    "parvataḥ",
+    "parvata",
+    "nom. sg. m."
+   ]
+  ]
+ },
+ "parvataḥ": {
+  "p": [
+   [
+    "parvataḥ",
+    "parvata",
+    "nom. sg. m."
+   ]
+  ]
+ },
+ "parvate": {
+  "p": [
+   [
+    "parvate",
+    "parvata",
+    "loc. sg. m."
+   ]
+  ]
+ },
+ "paśyan": {
+  "p": [
+   [
+    "paśyan",
+    "dṛś",
+    "present participle, nom. sg. m. — seeing"
+   ]
+  ]
+ },
+ "smaran": {
+  "p": [
+   [
+    "smaran",
+    "smṛ",
+    "present participle, nom. sg. m. — remembering"
+   ]
+  ]
+ },
+ "anumāya": {
+  "p": [
+   [
+    "anumāya",
+    "anumā",
+    "gerund (absolutive) — having inferred"
+   ]
+  ]
+ },
+ "pañcāvayavavākyaṃ": {
+  "p": [
+   [
+    "pañca",
+    "pañcan",
+    "compound member (stem)"
+   ],
+   [
+    "avayava",
+    "avayava",
+    "compound member (stem)"
+   ],
+   [
+    "vākyam",
+    "vākya",
+    "nom.-acc. sg. n."
+   ]
+  ]
+ },
+ "yo": {
+  "p": [
+   [
+    "yaḥ",
+    "yad",
+    "pronoun: nom. sg. m. — who, which"
+   ]
+  ]
+ },
+ "cāyam": {
+  "p": [
+   [
+    "ca",
+    "ca",
+    "indeclinable"
+   ],
+   [
+    "ayam",
+    "idam",
+    "pronoun: nom. sg. m."
+   ]
+  ]
+ },
+ "liṅgaparāmarśo": {
+  "p": [
+   [
+    "liṅga",
+    "liṅga",
+    "compound member (stem)"
+   ],
+   [
+    "parāmarśaḥ",
+    "parāmarśa",
+    "nom. sg. m."
+   ]
+  ]
+ },
+ "sarvasyāpi": {
+  "p": [
+   [
+    "sarvasya",
+    "sarva",
+    "pronoun: gen. sg."
+   ],
+   [
+    "api",
+    "api",
+    "indeclinable"
+   ]
+  ]
+ },
+ "bhidyate": {
+  "p": [
+   [
+    "bhidyate",
+    "bhid",
+    "verb: present, 3rd pers. sg., passive — is distinguished"
+   ]
+  ]
+ },
+ "niścitasādhyābhāvavān": {
+  "p": [
+   [
+    "niścita",
+    "niścita",
+    "compound member (stem)"
+   ],
+   [
+    "sādhya",
+    "sādhya",
+    "compound member (stem)"
+   ],
+   [
+    "abhāvavān",
+    "abhāvavat",
+    "nom. sg. m. — possessing the absence (of)"
+   ]
+  ]
+ },
+ "sādhyābhāvavadvṛttiḥ": {
+  "p": [
+   [
+    "sādhya",
+    "sādhya",
+    "compound member (stem)"
+   ],
+   [
+    "abhāvavat",
+    "abhāvavat",
+    "compound member (stem)"
+   ],
+   [
+    "vṛttiḥ",
+    "vṛtti",
+    "nom. sg. — occurring in"
+   ]
+  ]
+ },
+ "savyabhicāraviruddhasatpakṣāsiddhabādhitāḥ": {
+  "p": [
+   [
+    "savyabhicāra",
+    "savyabhicāra",
+    "compound member (stem)"
+   ],
+   [
+    "viruddha",
+    "viruddha",
+    "compound member (stem)"
+   ],
+   [
+    "satpakṣa",
+    "satpratipakṣa",
+    "compound member (stem) (short for satpratipakṣa)"
+   ],
+   [
+    "asiddha",
+    "asiddha",
+    "compound member (stem)"
+   ],
+   [
+    "bādhitāḥ",
+    "bādhita",
+    "nom. pl. m."
+   ]
+  ]
+ },
+ "sādhāraṇāsādhāraṇānupasaṃhāribhedāt": {
+  "p": [
+   [
+    "sādhāraṇa",
+    "sādhāraṇa",
+    "compound member (stem)"
+   ],
+   [
+    "asādhāraṇa",
+    "asādhāraṇa",
+    "compound member (stem)"
+   ],
+   [
+    "anupasaṃhāri",
+    "anupasaṃhārin",
+    "compound member (stem)"
+   ],
+   [
+    "bhedāt",
+    "bheda",
+    "abl. sg."
+   ]
+  ]
+ },
+ "'nupasaṃhārī": {
+  "p": [
+   [
+    "anupasaṃhārī",
+    "anupasaṃhārin",
+    "nom. sg. m."
+   ]
+  ]
+ },
+ "sarvasapakṣavipakṣavyāvṛtto": {
+  "p": [
+   [
+    "sarva",
+    "sarva",
+    "compound member (stem)"
+   ],
+   [
+    "sapakṣa",
+    "sapakṣa",
+    "compound member (stem)"
+   ],
+   [
+    "vipakṣa",
+    "vipakṣa",
+    "compound member (stem)"
+   ],
+   [
+    "vyāvṛttaḥ",
+    "vyāvṛtta",
+    "nom. sg. m. — excluded from"
+   ]
+  ]
+ },
+ "sādhyābhāvavyāpto": {
+  "p": [
+   [
+    "sādhya",
+    "sādhya",
+    "compound member (stem)"
+   ],
+   [
+    "abhāva",
+    "abhāva",
+    "compound member (stem)"
+   ],
+   [
+    "vyāptaḥ",
+    "vyāpta",
+    "nom. sg. m. — pervaded (by)"
+   ]
+  ]
+ },
+ "yasya": {
+  "p": [
+   [
+    "yasya",
+    "yad",
+    "pronoun: gen. sg. m./n. — whose, of which"
+   ]
+  ]
+ },
+ "niścitaḥ": {
+  "p": [
+   [
+    "niścitaḥ",
+    "niścita",
+    "nom. sg. m. — ascertained"
+   ]
+  ]
+ },
+ "tadabhāva": {
+  "p": [
+   [
+    "tad",
+    "tad",
+    "compound member (stem)"
+   ],
+   [
+    "abhāvaḥ",
+    "abhāva",
+    "nom. sg. m. (abhāvaḥ before a vowel)"
+   ]
+  ]
+ },
+ "saṃjñāsaṃjñisaṃbandhajñānam": {
+  "p": [
+   [
+    "saṃjñā",
+    "saṃjñā",
+    "compound member (stem)"
+   ],
+   [
+    "saṃjñi",
+    "saṃjñin",
+    "compound member (stem)"
+   ],
+   [
+    "saṃbandha",
+    "saṃbandha",
+    "compound member (stem)"
+   ],
+   [
+    "jñānam",
+    "jñāna",
+    "nom.-acc. sg. n."
+   ]
+  ]
+ },
+ "nityasaṃbandhaḥ": {
+  "p": [
+   [
+    "nitya",
+    "nitya",
+    "compound member (stem)"
+   ],
+   [
+    "saṃbandhaḥ",
+    "saṃbandha",
+    "nom. sg. m."
+   ]
+  ]
+ },
+ "tādātmyasaṃbandhāvacchinnapratiyogitāko": {
+  "p": [
+   [
+    "tādātmya",
+    "tādātmya",
+    "compound member (stem)"
+   ],
+   [
+    "saṃbandha",
+    "saṃbandha",
+    "compound member (stem)"
+   ],
+   [
+    "avacchinna",
+    "avacchinna",
+    "compound member (stem)"
+   ],
+   [
+    "pratiyogitākaḥ",
+    "pratiyogitāka",
+    "nom. sg. m. — whose counterpositiveness (is delimited by)"
+   ]
+  ]
+ },
+ "traikālikasaṃsargāvacchinnapratiyogitāko": {
+  "p": [
+   [
+    "traikālika",
+    "traikālika",
+    "compound member (stem)"
+   ],
+   [
+    "saṃsarga",
+    "saṃsarga",
+    "compound member (stem)"
+   ],
+   [
+    "avacchinna",
+    "avacchinna",
+    "compound member (stem)"
+   ],
+   [
+    "pratiyogitākaḥ",
+    "pratiyogitāka",
+    "nom. sg. m. — whose counterpositiveness (is delimited by)"
+   ]
+  ]
+ },
+ "yayor": {
+  "p": [
+   [
+    "yayoḥ",
+    "yad",
+    "pronoun: gen.-loc. du. — of which two"
+   ]
+  ]
+ },
+ "dvayor": {
+  "p": [
+   [
+    "dvayoḥ",
+    "dvi",
+    "gen.-loc. du. — of the two"
+   ]
+  ]
+ },
+ "madhya": {
+  "p": [
+   [
+    "madhye",
+    "madhya",
+    "loc. sg. (madhye before a vowel) — among"
+   ]
+  ]
+ },
+ "avinaśyadaparāśritam": {
+  "p": [
+   [
+    "avinaśyat",
+    "avinaśyat",
+    "compound member (stem) — present participle: ‘not perishing’"
+   ],
+   [
+    "apara",
+    "apara",
+    "compound member (stem)"
+   ],
+   [
+    "āśritam",
+    "āśrita",
+    "nom.-acc. sg. n. — resting on"
+   ]
+  ]
+ },
+ "evāvatiṣṭhate": {
+  "p": [
+   [
+    "eva",
+    "eva",
+    "indeclinable"
+   ],
+   [
+    "avatiṣṭhate",
+    "avasthā",
+    "verb: present, 3rd pers. sg., middle — remains"
+   ]
+  ]
+ },
+ "tāv": {
+  "p": [
+   [
+    "tau",
+    "tad",
+    "pronoun: nom. du. m. — these two"
+   ]
+  ]
+ },
+ "ayutasiddhau": {
+  "p": [
+   [
+    "ayutasiddhau",
+    "ayutasiddha",
+    "nom. du. m. — the two inseparably related things"
+   ]
+  ]
+ },
+ "bhavatīti": {
+  "p": [
+   [
+    "bhavati",
+    "bhū",
+    "verb: present, 3rd pers. sg., active"
+   ],
+   [
+    "iti",
+    "iti",
+    "indeclinable"
+   ]
+  ]
+ },
+ "bālavyutpattisiddhaye": {
+  "p": [
+   [
+    "bāla",
+    "bāla",
+    "compound member (stem)"
+   ],
+   [
+    "vyutpatti",
+    "vyutpatti",
+    "compound member (stem)"
+   ],
+   [
+    "siddhaye",
+    "siddhi",
+    "dat. sg. — for the sake of"
+   ]
+  ]
+ },
+ "annaṃbhaṭṭena": {
+  "p": [
+   [
+    "annaṃbhaṭṭena",
+    "annaṃbhaṭṭa",
+    "instr. sg. — by Annaṃbhaṭṭa"
+   ]
+  ]
+ },
+ "viduṣā": {
+  "p": [
+   [
+    "viduṣā",
+    "vidvas",
+    "instr. sg. m. — by the learned"
+   ]
+  ]
+ },
+ "yathārthavaktā": {
+  "p": [
+   [
+    "yathārtha",
+    "yathārtha",
+    "compound member (stem)"
+   ],
+   [
+    "vaktā",
+    "vaktṛ",
+    "nom. sg. m. — speaker"
+   ]
+  ]
+ },
+ "gavayaśabdavācya": {
+  "p": [
+   [
+    "gavaya",
+    "gavaya",
+    "compound member (stem)"
+   ],
+   [
+    "śabda",
+    "śabda",
+    "compound member (stem)"
+   ],
+   [
+    "vācyaḥ",
+    "vācya",
+    "nom. sg. m. (vācyaḥ before a vowel) — denoted by"
+   ]
+  ]
+ },
+ "ākāṅkṣādirahitaṃ": {
+  "p": [
+   [
+    "ākāṅkṣā",
+    "ākāṅkṣā",
+    "compound member (stem)"
+   ],
+   [
+    "ādi",
+    "ādi",
+    "compound member (stem)"
+   ],
+   [
+    "rahitam",
+    "rahita",
+    "nom.-acc. sg. n. — devoid of"
+   ]
+  ]
+ },
+ "viruddhanānādharmavaiśiṣṭyāvagāhi": {
+  "p": [
+   [
+    "viruddha",
+    "viruddha",
+    "compound member (stem)"
+   ],
+   [
+    "nānā",
+    "nānā",
+    "compound member (stem)"
+   ],
+   [
+    "dharma",
+    "dharma",
+    "compound member (stem)"
+   ],
+   [
+    "vaiśiṣṭya",
+    "vaiśiṣṭya",
+    "compound member (stem)"
+   ],
+   [
+    "avagāhi",
+    "avagāhin",
+    "nom.-acc. sg. n. — apprehending"
+   ]
+  ]
+ },
+ "'ṣṭāv": {
+  "p": [
+   [
+    "aṣṭau",
+    "aṣṭan",
+    "nom. pl. — eight"
+   ]
+  ]
+ },
+ "buddhīcchāprayatnā": {
+  "p": [
+   [
+    "buddhi",
+    "buddhi",
+    "compound member (stem)"
+   ],
+   [
+    "icchā",
+    "icchā",
+    "compound member (stem)"
+   ],
+   [
+    "prayatnāḥ",
+    "prayatna",
+    "nom. pl. m. (prayatnāḥ before a voiced sound)"
+   ]
+  ]
+ },
+ "tadavasthāpādakaḥ": {
+  "p": [
+   [
+    "tad",
+    "tad",
+    "compound member (stem)"
+   ],
+   [
+    "avasthā",
+    "avasthā",
+    "compound member (stem)"
+   ],
+   [
+    "āpādakaḥ",
+    "āpādaka",
+    "nom. sg. m. — bringing about"
+   ]
+  ]
+ },
+ "adhodeśasaṃyogahetur": {
+  "p": [
+   [
+    "adho",
+    "adhas",
+    "compound member (stem)"
+   ],
+   [
+    "deśa",
+    "deśa",
+    "compound member (stem)"
+   ],
+   [
+    "saṃyoga",
+    "saṃyoga",
+    "compound member (stem)"
+   ],
+   [
+    "hetuḥ",
+    "hetu",
+    "nom. sg. m."
+   ]
+  ]
+ },
+ "sattā": {
+  "p": [
+   [
+    "sattā",
+    "sattā",
+    "nom. sg. f."
+   ]
+  ]
+ },
+ "vyāvartakā": {
+  "p": [
+   [
+    "vyāvartakāḥ",
+    "vyāvartaka",
+    "nom. pl. m. (vyāvartakāḥ before a voiced sound) — distinguishing"
+   ]
+  ]
+ },
+ "padārthā": {
+  "p": [
+   [
+    "padārthāḥ",
+    "padārtha",
+    "nom. pl. m. (padārthāḥ before a vowel)"
+   ]
+  ]
+ },
+ "pratyātmaniyatatvād": {
+  "p": [
+   [
+    "pratyātma",
+    "pratyātmam",
+    "compound member (stem) — ‘for each self’"
+   ],
+   [
+    "niyatatvāt",
+    "niyatatva",
+    "abl. sg. — because of being restricted"
+   ]
+  ]
+ },
+ "prameyatvābhidheyatvayor": {
+  "p": [
+   [
+    "prameyatva",
+    "prameyatva",
+    "compound member (stem)"
+   ],
+   [
+    "abhidheyatvayoḥ",
+    "abhidheyatva",
+    "gen.-loc. du."
+   ]
+  ]
+ },
+ "pṛthivītarebhyo": {
+  "p": [
+   [
+    "pṛthivī",
+    "pṛthivī",
+    "nom. sg. f."
+   ],
+   [
+    "itarebhyaḥ",
+    "itara",
+    "abl. pl. — from the others"
+   ]
+  ]
+ },
+ "śabdasyākāśaguṇatvāt": {
+  "p": [
+   [
+    "śabdasya",
+    "śabda",
+    "gen. sg."
+   ],
+   [
+    "ākāśa",
+    "ākāśa",
+    "compound member (stem)"
+   ],
+   [
+    "guṇatvāt",
+    "guṇatva",
+    "abl. sg. — because of being a quality"
+   ]
+  ]
+ },
+ "kāṇādanyāyamatayor": {
+  "p": [
+   [
+    "kāṇāda",
+    "kāṇāda",
+    "compound member (stem) — of Kaṇāda (Vaiśeṣika)"
+   ],
+   [
+    "nyāya",
+    "nyāya",
+    "compound member (stem)"
+   ],
+   [
+    "matayoḥ",
+    "mata",
+    "gen.-loc. du. — of the two doctrines"
+   ]
+  ]
+ }
 }

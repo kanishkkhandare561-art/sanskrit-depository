@@ -210,6 +210,13 @@ class Analyzer:
                 a = re.sub(r"M(?=([kKgGcCjJwWqQtTdDnpPbBm]))", lambda m_: HOMO[m_.group(1)], k)
                 if a != k and a not in mw:
                     self.alias[a] = k
+        # and the reverse: MW sambandha / saṅkalpa, texts saṃbandha / saṃkalpa
+        CLS = {"m": "pPbBm", "n": "tTdDn", "N": "kKgG", "Y": "cCjJ", "R": "wWqQ"}
+        for k in mw:
+            if re.search(r"[mnNYR][kKgGcCjJwWqQtTdDpPbB]", k):
+                a = re.sub(r"([mnNYR])(?=([kKgGcCjJwWqQtTdDpPbB]))", lambda m_: "M" if m_.group(2) in CLS[m_.group(1)] else m_.group(1), k)
+                if a != k and a not in mw and a not in self.alias:
+                    self.alias[a] = k
         self.stems = (self.mwset | set(curated) | set(self.alias)) - STEM_BLOCK
 
     # ------------------------------------------------------------ word level
@@ -422,14 +429,20 @@ class Analyzer:
         return (u.endswith("tva") and len(u) > 5 and (u[:-3] in self.stems or (u[:-3] + "n") in self.stems)) or (u.endswith("tA") and len(u) > 4 and u[:-2] in self.stems and u[:-2][-1] in VOWELS)
 
     # ------------------------------------------------------------ compound / sandhi splitting
-    def split(self, token, nxt=""):
+    def split(self, token, nxt="", hints=None):
+        """hints: optional frozenset of ("c", pos) / ("f", pos) word-boundary hints from an
+        analytic (pada-pāṭha style) version of the text; c = boundary before pos,
+        f = boundary inside the fused vowel at pos."""
+        orig = token
         token = re.sub(r"r([kgcjwqtdpbmnyv])\1", r"r\1", token)
         token = re.sub(r"rtT", "rT", token)
         if token.endswith("nn") and len(token) > 3:
             token = token[:-1]
-        best = self._split(token, nxt)
+        if token != orig[:len(token)] or len(token) != len(orig) and not orig.endswith("nn"):
+            hints = None
+        best = self._split(token, nxt, hints)
         for alt in self.initial_variants(token):
-            r = self._split(alt, nxt)
+            r = self._split(alt, nxt, None)
             if r and (not best or r[0] + 0.05 < best[0]):
                 best = r
         return best
@@ -442,7 +455,22 @@ class Analyzer:
             out.append("S" + t[1:])
         return out
 
-    def _split(self, token, nxt=""):
+    def _hint_cost(self, hints, p, bpos, btype, left, final=False):
+        """Penalty for a segment S[p:bpos] ending in a boundary of type btype ("c" clean / "f" fused)."""
+        if not hints:
+            return 0.0
+        c = 0.0
+        lex = left in self.curated
+        for (k, h) in hints:
+            if p < h < bpos and not lex:
+                c += 0.8
+        if not final:
+            if (btype, bpos) not in hints and ("c", bpos) not in hints and ("f", bpos) not in hints and \
+               ("c", bpos + 1) not in hints and ("f", bpos - 1) not in hints:
+                c += 0.6
+        return c
+
+    def _split(self, token, nxt="", hints=None):
         S = token
         n = len(S)
         INF = 1e9
@@ -467,8 +495,10 @@ class Analyzer:
                     fp = self.final_pada(u, nxt)
                     if fp:
                         c = cost + self.seg_cost(fp[1], final=True, score=fp[0]) + self.obscurity(fp[2][0][0]) * (1 if fp[2][0][2] == "nom" else 0)
+                        hp = self._hint_cost(hints, p, n, "c", fp[2][0][0], final=True) if hints else 0.0
+                        c += hp
                         if final_best is None or c < final_best[0]:
-                            final_best = (c, key, fp[1], fp[2], fp[3])
+                            final_best = (c, key, fp[1], fp[2], fp[3], hp)
                     continue
                 for left, np_, npre, tc in self.junctions(S, p, j, pre):
                     if self.is_stem(left):
@@ -478,20 +508,31 @@ class Analyzer:
                         if not pp:
                             continue
                         c = cost + self.seg_cost(left, nonfinal_pada=True, score=pp[0][3], kind=pp[0][2]) + tc
+                    hp = 0.0
+                    if hints:
+                        if np_ == j:
+                            bt, bp = "c", j
+                        elif np_ == j + 1 and npre == "":
+                            bt, bp = "c", j + 1
+                        else:
+                            bt, bp = "f", j
+                        hp = self._hint_cost(hints, p, bp, bt, left)
+                        c += hp
                     nk = (np_, npre)
                     if nk not in best:
-                        heappush(heap, (c, np_, npre, (key, left, S[p:j])))
+                        heappush(heap, (c, np_, npre, (key, left, S[p:j], hp)))
         if not final_best:
             return None
-        c, key, ufinal, analyses, alts = final_best
+        c, key, ufinal, analyses, alts, hpen = final_best
         segs = [{"u": ufinal, "an": analyses, "alts": alts, "final": True}]
         while key != (0, ""):
             cost, back = best[key]
-            pkey, left, s = back
+            pkey, left, s, hp = back
+            hpen += hp
             segs.append({"u": left, "an": None, "final": False})
             key = pkey
         segs.reverse()
-        return c, segs
+        return c - hpen, segs
 
     def junctions(self, S, p, j, pre):
         n = len(S)

@@ -189,7 +189,6 @@ main { min-width: 0; outline: none; }
 @keyframes flash { 0%, 30% { background: var(--turmeric-wash); } 100% { background: transparent; } }
 .bh { font: 400 calc(19.5px * var(--fs))/1.85 var(--deva); color: var(--bhashya); margin: 0 0 16px 84px; max-width: 70ch; }
 .bh-label { margin: 0 0 6px 84px; font-size: 13px; font-weight: 600; color: var(--slate); }
-.hide-bh .bh, .hide-bh .bh-label { display: none; }
 .colophon { font: italic 400 calc(17px * var(--fs))/1.7 var(--deva); color: var(--slate); text-align: center; margin: 26px 0; }
 
 .w { cursor: pointer; border-radius: 4px; padding: 0 1px; transition: background .12s; }
@@ -214,6 +213,66 @@ p[data-words]:focus-visible { outline-offset: 6px; }
 .prose code { font-family: var(--deva); background: var(--indigo-soft); padding: 1px 6px; border-radius: 5px; }
 .legend { display: grid; gap: 10px; margin: 14px 0; padding: 0; list-style: none; }
 .legend li { display: grid; grid-template-columns: 150px 1fr; gap: 14px; align-items: start; }
+
+/* ---------- library & text pages ---------- */
+.darshana { margin: 44px 0 0; }
+.darshana-head h2 { font: 700 26px/1.2 var(--ui); letter-spacing: -.015em; margin: 0 0 6px; }
+.darshana-head h2 span { font: 400 26px/1.2 var(--deva); color: var(--indigo); margin-right: 6px; }
+.darshana-head p { color: var(--slate); margin: 0 0 20px; max-width: 64ch; }
+.texts { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.text-card {
+  display: grid; grid-template-columns: 1fr auto; gap: 2px 16px; padding: 16px 18px; border: 1px solid var(--rule); border-radius: 14px;
+  background: var(--surface); text-decoration: none; color: var(--ink);
+}
+.text-card:hover { border-color: var(--indigo); }
+.text-card .tc-deva { grid-column: 1; font: 400 21px/1.35 var(--deva); color: var(--indigo); }
+.text-card b { grid-column: 1; font-weight: 600; font-size: 17px; }
+.text-card .tc-by { grid-column: 1; color: var(--slate); font-size: 14px; }
+.text-card .tc-blurb { grid-column: 1; font-size: 15px; margin-top: 6px; max-width: 62ch; }
+.text-card i { grid-column: 2; grid-row: 1 / span 4; align-self: center; font-style: normal; color: var(--slate); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.text-hero { padding: 24px 0 36px; border-bottom: 1px solid var(--rule); }
+.th-deva { font: 400 clamp(28px, 4.2vw, 40px)/1.3 var(--deva); color: var(--indigo); margin: 0 0 6px; }
+.text-hero h1 { font: 700 30px/1.15 var(--ui); letter-spacing: -.02em; margin: 0 0 6px; }
+.th-by { color: var(--slate); font-weight: 500; margin: 0 0 14px; }
+.th-blurb { max-width: 64ch; margin: 0 0 14px; }
+.th-layers { margin: 0 0 16px; padding: 0; list-style: none; display: grid; gap: 4px; font-size: 15px; }
+.th-layers span { font: 400 17px/1.3 var(--deva); color: var(--indigo); }
+.caution { margin: 0 0 22px; padding: 10px 12px; border-left: 3px solid var(--turmeric); background: var(--turmeric-wash); border-radius: 0 8px 8px 0; font-size: 14.5px; max-width: 64ch; }
+.toc .adh span { display: block; }
+.toc a.ahn em { display: block; font: normal 400 15px/1.4 var(--deva); color: var(--slate); margin-top: 2px; }
+.src-note { color: var(--slate); font-size: 14px; margin: 26px 0 0; max-width: 68ch; }
+.side-back { display: block; padding: 4px 10px 10px; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--indigo); }
+.side-title { display: flex; flex-direction: column; padding: 8px 10px; margin: 0 0 16px; border-radius: 8px; text-decoration: none; color: var(--ink); }
+.side-title:hover, .side-title.on { background: var(--indigo-soft); }
+.side-title span { font: 400 15px/1.35 var(--deva); color: var(--slate); }
+.side-adh.solo { margin-bottom: 4px; }
+.side-sutras li.nh a span:last-child { color: var(--indigo); font-weight: 500; }
+.side-sutras li.ng a { grid-template-columns: 1fr; }
+.side-sutras li.ng a span:first-child { font-size: 12px; }
+
+/* ---------- reader additions ---------- */
+.sutra .st, .bh, .sec-h, .colophon, .pw { overflow-wrap: anywhere; }
+.sutra .st.long { font-size: calc(24px * var(--fs)); line-height: 1.6; }
+.bh-label { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; margin: 18px 0 8px 84px; color: var(--indigo); }
+.bh-label span { font: 400 19px/1.2 var(--deva); }
+.bh-label small { flex-basis: 100%; font-size: 12.5px; font-weight: 500; color: var(--slate); }
+.bh[data-l="prakasika"], .bh[data-l="balapriya"], .bh[data-l="notes"], .bh[data-l="prasarana"] { padding-left: 14px; border-left: 2px solid var(--rule); }
+.bh[data-l="balapriya"] { margin-left: 98px; }
+.bh-label[data-l="balapriya"] { margin-left: 98px; }
+.bh[data-l="notes"] { font-size: calc(17px * var(--fs)); color: var(--slate); }
+.bh.verse { margin-left: 108px; }
+.bh.main { color: var(--ink); }
+.sec-h { font: 500 calc(22px * var(--fs))/1.4 var(--deva); color: var(--indigo); margin: 8px 0 14px 84px; scroll-margin-top: 84px; }
+.sec-h.flash { animation: flash 1.6s ease-out; border-radius: 6px; }
+.pg { margin: 0 0 6px 84px; font: 600 12px/1 var(--ui); color: var(--slate); letter-spacing: .02em; scroll-margin-top: 84px; }
+.pg::before { content: "Bibl. Ind. "; font-weight: 400; }
+.cont { margin: 0 0 12px 84px; font-size: 13px; font-weight: 600; color: var(--slate); }
+.sutra .st.verse, .bh.verse { line-height: 1.75; }
+@media (max-width: 680px) {
+  .bh-label, .sec-h, .pg, .cont, .bh.verse, .bh[data-l="balapriya"], .bh-label[data-l="balapriya"] { margin-left: 0; }
+  .text-card { grid-template-columns: 1fr; }
+  .text-card i { grid-column: 1; grid-row: auto; margin-top: 6px; }
+}
 
 /* ---------- popup ---------- */
 .pop {
