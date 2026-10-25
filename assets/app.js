@@ -19,7 +19,47 @@
     gtid: null,
     chapters: new Map(),     // "tid/cid" -> promise of chapter
     pop: { anchor: null, entry: null, deva: "" },
+    corrections: {},         // site-wide corrections committed to the repository (data/corrections.json)
   };
+
+  /* ------------------------------------------------------------------ notes & corrections (kept in this browser) */
+  const REPO = "kanishkkhandare561-art/sanskrit-depository";
+  const notes = {
+    all() { return store.get("sd-notes", {}); },
+    get(w) { return this.all()[w] || null; },
+    set(w, rec) { const a = this.all(); a[w] = rec; store.set("sd-notes", a); },
+    del(w) { const a = this.all(); delete a[w]; store.set("sd-notes", a); },
+  };
+  const Lipi = window.SDLipi;
+  // "विशेषाः + तु + अनन्ताः" or "viśeṣāḥ + tu (tu) + anantāḥ (ananta)" -> parts
+  function parseSplit(text) {
+    return text.split("+").map((x) => x.trim()).filter(Boolean).map((x) => {
+      const m = x.match(/^(.*?)\s*\(([^)]*)\)\s*$/);
+      const form = (m ? m[1] : x).trim();
+      const lem = m ? m[2].trim() : "";
+      const u = Lipi.isDeva(form) ? Lipi.toIast(form) : form.normalize("NFC");
+      const l = lem ? (Lipi.isDeva(lem) ? Lipi.toIast(lem) : lem.normalize("NFC")) : "";
+      return { u, l: l || guessLemma(u), d: Lipi.toDeva(u), ld: Lipi.toDeva(l || guessLemma(u)), g: "", mine: 1 };
+    });
+  }
+  function splitText(parts) { return parts.map((p) => p.d).join(" + "); }
+  // a dictionary form for a typed part, by trying the glossary with common endings removed
+  function guessLemma(u) {
+    const g = state.glossary || {};
+    const cands = [u, u.replace(/ḥ$/, ""), u.replace(/(aḥ|am|aṃ|āt|asya|ena|eṇa|e|āya|au|āḥ|ān|āni|āṇi|aiḥ|ebhyaḥ|ānām|āṇām|eṣu)$/, "a"),
+      u.replace(/(ā|ām|āṃ|ayā|āyai|āyāḥ|āyām|āḥ)$/, "ā"), u.replace(/(iḥ|im|iṃ|inā|eḥ|au|ayaḥ|īn)$/, "i"), u.replace(/(uḥ|um|uṃ|unā|oḥ|avaḥ)$/, "u"),
+      u.replace(/(tvam|tvaṃ|tvāt|tvena|tve|tvasya)$/, "tva"), u.replace(/(tā|tām|tāṃ|tayā|tāyāḥ|tāyām)$/, "tā"), u.replace(/(t|d)$/, "t"), u.replace(/(t|d)$/, "d"), u + "n", u.replace(/a$/, "an"), u.replace(/o$/, "as"), u.replace(/(ā|ānam)$/, "an"), u.replace(/(aḥ|o)$/, "as")];
+    return cands.find((c) => g[c]) || u;
+  }
+  // the analysis to show: the reader's own correction, then a site-wide correction, then the automatic one
+  function effective(e) {
+    const mine = notes.get(e.w);
+    if (mine && mine.split && mine.split.length) return { ...e, p: mine.split, mine: 1, q: 0 };
+    const c = state.corrections[e.w];
+    if (c && c.p && c.p.length) return { ...e, p: c.p, corrected: 1, q: 0, cn: c.n || "" };
+    if (c && c.n) return { ...e, cn: c.n };
+    return e;
+  }
 
   const view = $("#view");
   const pop = $("#pop");
@@ -164,7 +204,8 @@
         h += `</div>`;
       }
     }
-    h += `<div class="side-adh"><a class="side-ahn" href="#/about" ${chapterId === "about" ? 'aria-current="page"' : ""}>About this depository</a></div>`;
+    const nn = Object.keys(notes.all()).length;
+    h += `<div class="side-adh"><a class="side-ahn" href="#/notes" ${chapterId === "notes" ? 'aria-current="page"' : ""}>My notes<small>${nn || ""}</small></a><a class="side-ahn" href="#/about" ${chapterId === "about" ? 'aria-current="page"' : ""}>About this depository</a></div>`;
     $("#sideInner").innerHTML = h;
     const on = $(".side-ahn[aria-current]", sidebar);
     if (on && chapterId !== "about") on.scrollIntoView({ block: "nearest" });
@@ -271,6 +312,21 @@
       applySettings();
     }));
     observeAnchors();
+    markNoted(ch);
+  }
+  function markNoted(chIn) {
+    const p = chIn ? Promise.resolve(chIn) : state.chapters.get(view.dataset.chapter);
+    if (!p) return;
+    p.then((ch) => {
+      const mine = notes.all();
+      $$(".w", view).forEach((w) => {
+        const e = ch.lex[+w.dataset.k];
+        if (!e) return;
+        w.classList.toggle("noted", !!mine[e.w]);
+        w.classList.toggle("fixed", !mine[e.w] && !!state.corrections[e.w]);
+        if (state.corrections[e.w] || (mine[e.w] && mine[e.w].split && mine[e.w].split.length)) w.classList.remove("low");
+      });
+    });
   }
   function pagerLabel(ix, c) {
     const g = groupsOf(ix).find((x) => x.items.includes(c));
@@ -396,6 +452,7 @@
 
   /* ------------------------------------------------------------------ about */
   async function renderAbout() {
+    brandSub.textContent = "Sanskrit texts you can read word by word";
     renderSidebar(null, "about");
     view.dataset.chapter = "about";
     view.dataset.text = "";
@@ -404,6 +461,10 @@
     view.innerHTML = `<article class="prose">
       <h1>About this depository</h1>
       <p>The Sanskrit Depository is a reading room for Sanskrit texts. Each text is shown in Devanagari exactly as it is written, with sandhi intact; tap any word and a popup gives its sandhi split, its grammar and its English meaning.</p>
+
+      <h2>Who made it</h2>
+      <p>The Sanskrit Depository is made and maintained by <b>Kanishk Khandare</b>, an undergraduate law student at Maharashtra National Law University (MNLU), Nagpur. The site is his project to make the classical Sanskrit texts of the Nyāya school readable word by word, with every word open to its sandhi split, grammar and meaning, and to correct the analysis as he reads.</p>
+      <p>If you find a wrong split or meaning, tap the word and use <b>Add a note or correct this split</b>, then send it from <a href="#/notes">My notes</a>.</p>
 
       <h2>The texts</h2>
       ${ixs.map((ix) => `<p><b>${esc(ix.title)}</b> <span class="dv">${esc(ix.deva)}</span>. ${esc(ix.source)}</p>`).join("")}
@@ -416,6 +477,8 @@
         <li><span class="ptag mw">Monier-Williams</span><span>Meaning taken from the dictionary. The first senses are shown; the sense intended here may be a later one.</span></li>
         <li><span class="ptag q">Check this analysis</span><span>The split or the grammar is uncertain. Words like this are shown with a dotted underline in the text.</span></li>
         <li><span class="ptag c">Verified</span><span>The analysis was checked by hand.</span></li>
+        <li><span class="ptag c">Corrected</span><span>A reader corrected the automatic split; the correction is now part of the site.</span></li>
+        <li><span class="ptag me">Your correction</span><span>Your own split, saved in this browser. Words you have a note on carry a small dot.</span></li>
       </ul>
       <p>The analysis is automatic and will sometimes be wrong, especially in the commentaries and in the e-texts that were not proof-read. The sūtras of the Nyāyasūtra and the root text of the Tarkasaṃgraha have been reviewed. Where a form is ambiguous, the popup lists the other possible readings.</p>
 
@@ -423,8 +486,79 @@
       <p>Press <b>Tab</b> to move to a paragraph, <b>Enter</b> to step into its words, <b>←</b> and <b>→</b> to move between words, <b>Enter</b> to open a word and <b>Esc</b> to close it.</p>
 
       <h2>Corrections and new texts</h2>
-      <p>The analysis is generated by the scripts in the <code>build</code> folder of the repository. To correct a word, add it to <code>build/overrides.json</code>; to improve a meaning, edit <code>build/curated.json</code> or <code>build/curated_navya.json</code>; then run the build again. The same pipeline prepares new texts for the depository.</p>
+      <p>Corrections sent from <a href="#/notes">My notes</a> are added to <code>data/corrections.json</code>, which the site reads directly, and to <code>build/overrides.json</code>, so they survive the next rebuild. The analysis itself is generated by the scripts in the <code>build</code> folder of the repository. To correct a word by hand, add it to <code>build/overrides.json</code>; to improve a meaning, edit <code>build/curated.json</code> or <code>build/curated_navya.json</code>; then run the build again. The same pipeline prepares new texts for the depository.</p>
     </article>`;
+  }
+
+  /* ------------------------------------------------------------------ my notes */
+  function notesPayload(list) {
+    return { format: "sanskrit-depository-notes", version: 1, exported: new Date().toISOString(),
+      notes: list.map((n) => ({ w: n.w, d: n.d, text: n.text || "", split: (n.split || []).map((p) => ({ u: p.u, l: p.l })), auto: n.auto || [], where: n.where || "" })) };
+  }
+  function download(name, text) {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+    a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }
+  async function renderNotes() {
+    brandSub.textContent = "My notes";
+    renderSidebar(null, "notes");
+    view.dataset.chapter = "notes";
+    view.dataset.text = "";
+    const all = Object.values(notes.all()).sort((a, b) => (b.t || 0) - (a.t || 0));
+    const fixes = all.filter((n) => n.split && n.split.length);
+    const rows = all.map((n) => `<li class="note-row">
+        <div class="nr-word"><a href="${esc(n.where || "#/")}" lang="sa">${esc(n.d || Lipi.toDeva(n.w))}</a><span class="nr-iast">${esc(n.w)}</span></div>
+        <div class="nr-body">
+          ${n.split && n.split.length ? `<p><span class="ptag me">Your split</span> <span lang="sa">${esc(splitText(n.split))}</span></p>${n.auto && n.auto.length ? `<p class="nr-auto">Automatic: <span lang="sa">${esc(n.auto.map(Lipi.toDeva).join(" + "))}</span></p>` : ""}` : ""}
+          ${n.text ? `<p>${esc(n.text)}</p>` : ""}
+          <p class="nr-meta">${n.t ? new Date(n.t).toLocaleDateString() : ""} · <a href="${esc(n.where || "#/")}">Go to the word</a> · <button class="linkbtn" data-del="${esc(n.w)}">Delete</button></p>
+        </div></li>`).join("");
+    view.innerHTML = `<article class="prose notes-page">
+      <h1>My notes</h1>
+      <p>Tap any word in any text and choose <b>Add a note or correct this split</b>. You can write a note, and you can retype the sandhi split, parts joined by <code>+</code> — <span class="dv">विशेषाः + तु + अनन्ताः</span> — in Devanagari or IAST. Your split replaces the automatic one straight away, everywhere the word occurs, and the word is marked with a dot in the text.</p>
+      <p>Notes are kept in this browser only. To keep them safe or move them to another device, export them. To correct the site for every reader, send your corrections to the repository: when the owner of the repository sends them, they are applied automatically within a minute or two.</p>
+      <div class="note-btns big">
+        <button class="btn primary" id="nSend" ${fixes.length || all.length ? "" : "disabled"}>Send corrections to the repository</button>
+        <button class="btn" id="nExport" ${all.length ? "" : "disabled"}>Export notes</button>
+        <label class="btn" for="nImport">Import notes</label><input type="file" id="nImport" accept="application/json,.json" hidden>
+      </div>
+      <p class="note-status" id="nStatus" role="status"></p>
+      ${all.length ? `<h2>${all.length} ${all.length === 1 ? "word" : "words"}</h2><ol class="note-list">${rows}</ol>` : `<p class="empty-notes">No notes yet.</p>`}
+    </article>`;
+    const status = (m) => { $("#nStatus").textContent = m; };
+    $$("[data-del]", view).forEach((b) => b.addEventListener("click", () => { notes.del(b.dataset.del); renderNotes(); }));
+    const ex = $("#nExport");
+    if (ex) ex.addEventListener("click", () => download(`sanskrit-depository-notes-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(notesPayload(all), null, 1)));
+    $("#nImport").addEventListener("change", async (ev) => {
+      const f = ev.target.files[0];
+      if (!f) return;
+      try {
+        const data = JSON.parse(await f.text());
+        let n = 0;
+        for (const r of data.notes || []) {
+          if (!r.w) continue;
+          const split = (r.split || []).map((p) => ({ u: p.u, l: p.l || p.u, d: Lipi.toDeva(p.u), ld: Lipi.toDeva(p.l || p.u), g: "", mine: 1 }));
+          notes.set(r.w, { w: r.w, d: r.d || Lipi.toDeva(r.w), text: r.text || "", split, auto: r.auto || [], where: r.where || "", t: Date.now() });
+          n++;
+        }
+        renderNotes();
+        setTimeout(() => { const st = $("#nStatus"); if (st) st.textContent = `Imported ${n} ${n === 1 ? "note" : "notes"}.`; }, 0);
+      } catch (e) { status("That file could not be read as exported notes."); }
+    });
+    const send = $("#nSend");
+    if (send) send.addEventListener("click", async () => {
+      const json = JSON.stringify(notesPayload(all));
+      const title = `Corrections: ${all.length} ${all.length === 1 ? "word" : "words"}`;
+      const body = "Sent from the My notes page of the Sanskrit Depository.\n\n```json\n" + json + "\n```\n";
+      const url = `https://github.com/${REPO}/issues/new?title=${encodeURIComponent(title)}&labels=corrections&body=${encodeURIComponent(body)}`;
+      if (url.length < 7500) { window.open(url, "_blank", "noopener"); status("A new GitHub issue has opened in another tab with your corrections filled in. Press Submit new issue there."); return; }
+      try { await navigator.clipboard.writeText(body); } catch (e) { download("sanskrit-depository-corrections.json", json); }
+      window.open(`https://github.com/${REPO}/issues/new?title=${encodeURIComponent(title)}&labels=corrections`, "_blank", "noopener");
+      status("There are too many corrections to fit in a link, so they were copied to your clipboard (or downloaded). Paste them into the body of the GitHub issue that opened, then press Submit new issue.");
+    });
   }
 
   /* ------------------------------------------------------------------ popup */
@@ -466,14 +600,18 @@
     return g.s === "c" ? `<span class="ptag c">Nyāya glossary</span>` : `<span class="ptag mw">Monier-Williams</span>`;
   }
 
-  function renderPop(focusPart) {
-    const { entry: e, deva } = state.pop;
+  function renderPop(focusPart, editing) {
+    const { deva } = state.pop;
+    const auto = state.pop.entry;
+    const e = state.pop.showAuto ? auto : effective(auto);
     const parts = e.p || [];
     let h = `<button class="pop-close" id="popClose" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       <p class="pw${deva.length > 22 ? " long" : ""}" id="popWord" lang="sa">${deva}</p>
       <p class="pw-iast" lang="sa-Latn">${esc(e.w)}</p>`;
     let tags = "";
-    if (e.v) tags += `<span class="ptag c">Verified</span>`;
+    if (e.mine) tags += `<span class="ptag me">Your correction</span>`;
+    else if (e.corrected) tags += `<span class="ptag c">Corrected</span>`;
+    else if (e.v) tags += `<span class="ptag c">Verified</span>`;
     if (!parts.length) tags += `<span class="ptag q">Not analysed</span>`;
     else if (e.q) tags += `<span class="ptag q">Check this analysis</span>`;
     if (parts.length === 1) tags += sourceTag(parts[0]);
@@ -505,15 +643,61 @@
     } else {
       h += `<p class="mean" style="margin-top:14px">This form could not be analysed automatically — it may contain a misprint in the source, or be a rare form.</p>`;
     }
+    h += noteSection(auto, e, editing);
     const linkWord = parts.length === 1 ? parts[0].l : focusPart != null && parts[focusPart] ? parts[focusPart].l : parts.length ? null : e.w.replace(/^'/, "a");
     if (linkWord) h += `<div class="pfoot"><a href="https://www.wisdomlib.org/definition/${slug(linkWord)}" target="_blank" rel="noopener">Look up “${esc(linkWord)}” on Wisdomlib</a></div>`;
     else h += `<div class="pfoot"><span class="src">Tap a part to read its full entry.</span></div>`;
     popInner.innerHTML = h;
     $("#popClose").addEventListener("click", () => closePop(true));
+    if (editing) { const t = $("#noteSplit", popInner); if (t) { t.focus(); t.setSelectionRange(t.value.length, t.value.length); } }
   }
 
+  function noteSection(auto, e, editing) {
+    const mine = notes.get(auto.w);
+    let h = `<div class="psec notes-sec">`;
+    if (e.cn) h += `<p class="note"><b>Note:</b> ${esc(e.cn)}</p>`;
+    if (editing) {
+      const cur = mine && mine.split && mine.split.length ? mine.split : (effective(auto).p || []);
+      h += `<form class="note-form" id="noteForm">
+        <label for="noteSplit">Sandhi split <small>parts joined by +, in Devanagari or IAST; add a dictionary form in brackets if you like: <span lang="sa">अनन्ताः (अनन्त)</span></small></label>
+        <input id="noteSplit" lang="sa" autocomplete="off" spellcheck="false" value="${esc(cur.map((p) => p.d + (p.l && p.l !== p.u ? ` (${p.ld || Lipi.toDeva(p.l)})` : "")).join(" + "))}">
+        <label for="noteText">Note</label>
+        <textarea id="noteText" rows="3" placeholder="What is wrong, or anything you want to remember about this word">${esc(mine ? mine.text || "" : "")}</textarea>
+        <div class="note-btns"><button class="btn primary sm" type="submit">Save</button><button class="btn sm" type="button" data-note-cancel>Cancel</button>${mine ? `<button class="btn sm danger" type="button" data-note-del>Delete</button>` : ""}</div>
+        <p class="note-hint">Saved in this browser and applied at once. To correct the site for everyone, send it from <a href="#/notes">My notes</a>.</p>
+      </form>`;
+    } else if (mine) {
+      h += `<div class="my-note"><h4>Your note</h4>${mine.text ? `<p>${esc(mine.text)}</p>` : ""}${mine.split && mine.split.length ? `<p class="my-split">Your split: <span lang="sa">${esc(splitText(mine.split))}</span></p>` : ""}
+        <div class="note-btns"><button class="linkbtn" type="button" data-note-edit>Edit</button>${mine.split && mine.split.length ? `<button class="linkbtn" type="button" data-show-auto>${state.pop.showAuto ? "Show your split" : "Show the automatic split"}</button>` : ""}</div></div>`;
+    } else {
+      h += `<button class="linkbtn note-open" type="button" data-note-edit>✎ Add a note or correct this split</button>`;
+    }
+    return h + `</div>`;
+  }
+
+  popInner.addEventListener("submit", (ev) => {
+    ev.preventDefault();
+    const auto = state.pop.entry;
+    const sp = $("#noteSplit", popInner).value.trim();
+    const tx = $("#noteText", popInner).value.trim();
+    const autoText = splitText(effective({ ...auto }).p || []);
+    let split = sp ? parseSplit(sp) : [];
+    const typed = split.map((p) => p.d).join(" + ");
+    const old = notes.get(auto.w);
+    // keep the split only if the reader changed it
+    if (typed === autoText && !(old && old.split && old.split.length)) split = [];
+    if (!tx && !split.length) { notes.del(auto.w); }
+    else notes.set(auto.w, { w: auto.w, d: state.pop.deva.replace(/<[^>]+>/g, ""), text: tx, split, auto: (auto.p || []).map((p) => p.u), where: location.hash, t: Date.now() });
+    state.pop.showAuto = false;
+    renderPop(null);
+    markNoted();
+  });
   popInner.addEventListener("click", (ev) => {
     ev.stopPropagation();
+    if (ev.target.closest("[data-note-edit]")) { renderPop(null, true); return; }
+    if (ev.target.closest("[data-note-cancel]")) { renderPop(null); return; }
+    if (ev.target.closest("[data-note-del]")) { notes.del(state.pop.entry.w); renderPop(null); markNoted(); return; }
+    if (ev.target.closest("[data-show-auto]")) { state.pop.showAuto = !state.pop.showAuto; renderPop(null); return; }
     const b = ev.target.closest("button[data-i]");
     if (b) {
       const i = +b.dataset.i;
@@ -532,7 +716,7 @@
 
   function openPop(anchor, entry, deva, opts = {}) {
     if (state.pop.anchor && state.pop.anchor !== anchor) state.pop.anchor.classList.remove("sel");
-    state.pop = { anchor, entry, deva, context: opts.context || "" };
+    state.pop = { anchor, entry, deva, context: opts.context || "", showAuto: false };
     anchor.classList.add("sel");
     renderPop(opts.focusPart ?? null);
     pop.hidden = false;
@@ -600,6 +784,7 @@
     }
     const t = document.activeElement;
     if (!t || !view.contains(t)) return;
+    if (t.matches("input, textarea")) return;
     if (t.matches("[data-words]") && (ev.key === "Enter" || ev.key === " ")) {
       const f = $(".w", t); if (f) { f.focus(); ev.preventDefault(); }
     } else if (t.classList.contains("w")) {
@@ -681,6 +866,7 @@
     applySettings();
     if (!h) { await renderHome(); window.scrollTo(0, 0); return; }
     if (h === "about") { await renderAbout(); window.scrollTo(0, 0); return; }
+    if (h === "notes") { await renderNotes(); window.scrollTo(0, 0); return; }
     // links from before the depository held more than one text: #/1.1, #/1.1.4
     if (/^\d\.\d(?:[./]\d+)?$/.test(h)) { location.replace(`#/nyaya/${h.replace("/", ".")}`); return; }
     const [tid, x, y] = h.split("/");
@@ -726,6 +912,7 @@
   async function init() {
     try {
       state.library = await getJSON("data/library.json");
+      try { state.corrections = await getJSON("data/corrections.json"); } catch (e) { state.corrections = {}; }
     } catch (err) {
       view.innerHTML = `<div class="prose"><h1>The texts could not be loaded</h1><p>${esc(err.message)}.</p><p>If you opened <code>index.html</code> directly from your computer, the browser blocks the data files. Open the site through GitHub Pages, or run <code>python3 -m http.server</code> in this folder and visit <code>http://localhost:8000</code>.</p></div>`;
       return;

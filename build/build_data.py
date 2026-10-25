@@ -295,6 +295,12 @@ def join_words(out):
             continue
         word = "".join(g[0] for g in group)
         key = "+".join(g[1] for g in group)
+        if key not in ANALYSES and word in overrides:     # a correction made to the joined word
+            ov = overrides[word]
+            parts = [{"u": q[0], "l": q[1], "g": q[2] if len(q) > 2 else "", "d": deva(q[0]), "ld": deva(q[1])} for q in ov["p"]]
+            for q in ov["p"]:
+                gloss_for(slp(q[1]))
+            ANALYSES[key] = {"w": word, "p": parts, "v": 1, **({"n": ov["n"]} if ov.get("n") else {})}
         if key not in ANALYSES:
             es = [ANALYSES[g[1]] for g in group]
             e = {"w": word, "p": [p for x in es for p in x["p"]]}

@@ -1,0 +1,36 @@
+# When the owner of the repository opens a "Corrections" issue from the site's My notes page,
+# apply the corrections to data/corrections.json and build/overrides.json, commit, and close the issue.
+name: Apply corrections
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  apply:
+    if: github.event.issue.user.login == github.repository_owner && startsWith(github.event.issue.title, 'Corrections')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply the corrections
+        env:
+          BODY: ${{ github.event.issue.body }}
+        run: |
+          printf '%s' "$BODY" > /tmp/body.txt
+          python3 build/apply_corrections.py --issue-body /tmp/body.txt | tee /tmp/result.txt
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/corrections.json build/overrides.json
+          git diff --cached --quiet || git commit -m "Apply corrections from #${{ github.event.issue.number }}"
+          git push
+      - name: Close the issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue close ${{ github.event.issue.number }} --repo ${{ github.repository }} --comment "Applied: $(cat /tmp/result.txt). The site shows the corrections once GitHub Pages has redeployed (usually a minute or two)."
