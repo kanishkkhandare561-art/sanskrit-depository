@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sanskrit Depository — Nyāyasūtra with Vātsyāyana’s Bhāṣya</title>
+<meta name="description" content="The Nyāyasūtra of Gautama with Vātsyāyana’s commentary in Devanagari. Tap any word for its sandhi split, grammar and English meaning.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232E3A87'/%3E%3Ctext x='32' y='46' font-size='40' text-anchor='middle' fill='%23E8A317' font-family='serif'%3E%E0%A4%A8%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Sanskrit:ital@0;1&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css">
+<script>
+  try { const t = localStorage.getItem("sd-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to text</a>
+<header class="top">
+  <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open contents" aria-controls="sidebar" aria-expanded="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+  </button>
+  <a class="brand" href="#/">
+    <span class="brand-mark" aria-hidden="true">न्या</span>
+    <span class="brand-text"><b>Sanskrit Depository</b><small>Nyāyasūtra with Vātsyāyana’s Bhāṣya</small></span>
+  </a>
+  <div class="search">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+    <input id="search" type="search" placeholder="Find a sūtra — 1.1.4, pratyakṣa, प्रत्यक्ष" autocomplete="off" aria-label="Find a sūtra">
+    <div class="search-results" id="searchResults" role="listbox" hidden></div>
+  </div>
+  <div class="tools">
+    <button class="icon-btn" id="sizeDown" aria-label="Smaller text" title="Smaller text"><span class="aa small">अ</span></button>
+    <button class="icon-btn" id="sizeUp" aria-label="Larger text" title="Larger text"><span class="aa">अ</span></button>
+    <button class="icon-btn" id="themeBtn" aria-label="Switch colour theme" title="Switch colour theme">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="sidebar" id="sidebar" aria-label="Contents">
+    <div class="side-inner" id="sideInner"></div>
+  </nav>
+  <main id="main" tabindex="-1">
+    <div id="view" aria-live="polite"></div>
+  </main>
+</div>
+<div class="scrim" id="scrim" hidden></div>
+
+<div class="pop" id="pop" role="dialog" aria-modal="false" aria-labelledby="popWord" hidden>
+  <div class="pop-arrow" id="popArrow"></div>
+  <div class="pop-inner" id="popInner"></div>
+</div>
+
+<template id="tplHome">
+  <section class="hero">
+    <p class="hero-kicker">The opening sūtra of the Nyāyasūtra</p>
+    <div class="hero-sutra" id="heroSutra" aria-label="Nyāyasūtra 1.1.1"></div>
+    <p class="hero-trans">From true knowledge of the sixteen categories — the means of knowledge, the objects of knowledge, doubt, purpose, example, tenet, the members of an argument, hypothetical reasoning, ascertainment, discussion, disputation, cavil, pseudo-reasons, quibble, futile rejoinder and points of defeat — the highest good is attained.</p>
+    <p class="hero-hint">Tap any word above. Long compounds open with their sandhi split first; tap a part to read its meaning.</p>
+    <div class="hero-actions">
+      <a class="btn primary" href="#/1.1">Start reading at 1.1.1</a>
+      <a class="btn" href="#/about">How the word analysis works</a>
+    </div>
+  </section>
+  <section class="contents" aria-labelledby="contentsTitle">
+    <h2 id="contentsTitle">Contents</h2>
+    <p class="contents-sub">Five adhyāyas, each in two āhnikas (“a day’s lesson”). 528 sūtras, with the full commentary of Vātsyāyana.</p>
+    <ol class="toc" id="toc"></ol>
+  </section>
+</template>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

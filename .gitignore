@@ -1,0 +1,7 @@
+build/vdata/
+build/mw.txt
+build/mw_index.json
+build/parsed.json
+build/report.json
+__pycache__/
+.DS_Store
