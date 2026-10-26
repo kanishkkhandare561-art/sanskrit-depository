@@ -1,0 +1,82 @@
+{
+  "title": "Vivekacūḍāmaṇi",
+  "short": "Vivekacūḍāmaṇi",
+  "deva": "विवेकचूडामणि",
+  "author": "Ādi Śaṅkarācārya (attrib.)",
+  "blurb": "The 'Crest-Jewel of Discrimination', a foundational Advaita Vedānta treatise in 580 verses, framed as a dialogue between a liberated Guru and a seeking disciple, expounding the discrimination between the real (Brahman) and the unreal (the world/body).",
+  "root": "prakaraṇa",
+  "layers": [
+    { "k": "mula", "name": "Mūla", "deva": "मूल", "by": "Ādi Śaṅkara" }
+  ],
+  "groups": "prakarana",
+  "source": "Based on the edition of Swami Madhavananda (Advaita Ashrama, 1921), cross-checked against common Vedānta recensions. Verse numbering follows the standard 580-verse recension.",
+  "caution": "Verse numbering can vary between editions (e.g., 580 vs 581). The text here follows the Madhavananda/Chinmaya numbering. Sanskrit sandhi is retained in the pada-pāṭha; the `i` field provides a normalized IAST for search.",
+  "id": "vivekachudamani",
+  "chapters": [
+    {
+      "id": "1",
+      "title": "Chapter I · Maṅgala & Sādhana-catuṣṭaya",
+      "topic": "Invocation to Govinda/Guru; the rarity of human birth; the fourfold qualification of the seeker (sādhana-catuṣṭaya); the definition of Bhakti and the approach to a Guru.",
+      "group": "Chapter I",
+      "short": "Sādhana",
+      "part": [1, 8],
+      "base": "1",
+      "range": ["1", "31"],
+      "nroots": 4,
+      "nav": [
+        ["s", "1", "सर्ववेदान्तसिद्धान्तगोचरं तमगोचरम् । गोविन्दं परमानन्दं सद्गुरुं प्रणतोऽस्म्यहम् ॥१॥", "sarvavedāntasiddhāntagocaraṃ tam agocaram / govindaṃ paramānandaṃ sadguruṃ praṇato'smyaham //1//", "1"],
+        ["s", "2", "जन्तूनां नरजन्म दुर्लभमतः पुंस्त्वं ततो विप्रता तस्माद्वैदिकधर्ममार्गपरता विद्वत्त्वमस्मात्परम् । आत्मानात्मविवेचनं स्वनुभवो ब्रह्मात्मना संस्थितिः मुक्तिर्नो शतजन्मकोटिसुकृतैः पुण्यैर्विना लभ्यते ॥२॥", "jantūnāṃ narajanma durlabhamataḥ puṃstvaṃ tato vipratā tasmādvaidikadharmamārgaparatā vidvattvamasmātparam / ātmānātmavivecanaṃ svanubhavo brahmātmanā saṃsthitiḥ muktirno śatajanmakoṭisukṛtaiḥ puṇyairvinā labhyate //2//", "2"],
+        ["s", "11", "सद्भिरेव सहास्तव्यं सद्भिः कुर्वीत सङ्गतिम् । सद्भिर्विवादं मैत्रीं च नासद्भिः किञ्चिदाचरेत् ॥११॥", "sadbhireva sahāstavyaṃ sadbhiḥ kurvīta saṅgatim / sadbhirvivādaṃ maitrīṃ ca nāsadbhiḥ kiñcidācaret //11//", "11"],
+        ["s", "18", "अतो विमुक्त्यै प्रयतेत्विद्वान् संन्यस्तबाह्यार्थसुखस्पृहः सन् । सन्तं महान्तं समुपेत्य देशिकं तेनोपदिष्टार्थसमाहितात्मा ॥१८॥", "ato vimuktyai prayatetvidvān saṃnyastabāhyārthasukhaspṛhaḥ san / santaṃ mahāntaṃ samupetya deśikaṃ tenopadiṣṭārthasamāhitātmā //18//", "18"]
+      ]
+    },
+    {
+      "id": "2",
+      "title": "Chapter II · Anātma-viveka (The Not-Self)",
+      "topic": "Discrimination of the five sheaths (pañca-kośa): the gross body (annamaya), the vital airs (prāṇamaya), the mind (manomaya), the intellect (vijñānamaya), and the causal body (ānandamaya). The Self is realized as distinct from all of these.",
+      "group": "Chapter II",
+      "short": "Anātma-viveka",
+      "part": [2, 8],
+      "base": "2",
+      "range": ["154", "225"],
+      "nroots": 3,
+      "nav": [
+        ["s", "154", "अन्नमयादिभिरपि कोशैः सर्वैर्युक्तं शरीरमेतस्य । आत्मेति मूढैरभिमन्यतेऽत्र त्यक्त्वान्तरं शुद्धमजं विचिन्त्यम् ॥१५४॥", "annamayādibhirapi kośaiḥ sarvairyuktaṃ śarīrametasya / ātmeti mūḍhairabhimanyate'tra tyaktvāntaraṃ śuddhamajaṃ vicintyam //154//", "154"],
+        ["s", "165", "प्राणमयं कोशं चित्तादीनां वृत्तिभिर्विजानीयात् । नाहं प्राणः प्राणवृत्तिर्न मे सा ममैव सा नाहं तद्वृत्तिः ॥१६५॥", "prāṇamayaṃ kośaṃ cittādīnāṃ vṛttibhirvijānīyāt / nāhaṃ prāṇaḥ prāṇavṛttirna me sā mamaiva sā nāhaṃ tadvṛttiḥ //165//", "165"],
+        ["s", "189", "विज्ञानमयः कोशः सर्वज्ञत्वादिलक्षणः । अहं ब्रह्मेति निर्देश्यः सोऽप्यनात्मा हि बुद्धिमान् ॥१८९॥", "vijñānamayaḥ kośaḥ sarvajñatvādilakṣaṇaḥ / ahaṃ brahmeti nirdeśyaḥ so'pyanātmā hi buddhimān //189//", "189"]
+      ]
+    },
+    {
+      "id": "3",
+      "title": "Chapter III · The Mahāvākya & Direct Knowledge",
+      "topic": "The great sayings (Tat Tvam Asi, etc.) and the identity of the individual Self (jīva) with Brahman. The removal of ignorance through śravaṇa, manana, and nididhyāsana.",
+      "group": "Chapter III",
+      "short": "Mahāvākya",
+      "part": [3, 8],
+      "base": "3",
+      "range": ["226", "338"],
+      "nroots": 3,
+      "nav": [
+        ["s", "238", "तत्त्वमस्यादिवाक्यानां यदि नात्मप्रबोधने । शक्तिः स्यात्किं ततः कुर्याद्ब्रह्मात्मैक्यप्रकाशनम् ॥२३८॥", "tattvamasyādivākyānāṃ yadi nātmaprabodhane / śaktiḥ syātkiṃ tataḥ kuryādbrahmātmaikyaprakāśanam //238//", "238"],
+        ["s", "250", "श्रवणं मननं ध्यानं निदिध्यासनमित्यपि । मुमुक्षोर्ज्ञानसिद्ध्यर्थं कार्यमेतद्विचक्षणैः ॥२५०॥", "śravaṇaṃ mananaṃ dhyānaṃ nididhyāsanamityapi / mumukṣorjñānasiddhyarthaṃ kāryametadvicakṣaṇaiḥ //250//", "250"],
+        ["s", "267", "वासनाहीनचित्तस्य योगिनः सत्यदर्शिनः । ब्रह्मैव सर्वमेवेति विदुषोऽस्य विचारणा ॥२६७॥", "vāsanāhīnacittasya yoginaḥ satyadarśinaḥ / brahmaiva sarvameveti viduṣo'sya vicāraṇā //267//", "267"]
+      ]
+    },
+    {
+      "id": "4",
+      "title": "Chapter IV · Jīvanmukti & the Jñānī",
+      "topic": "The characteristics of the liberated sage (jīvanmukta): detachment, bliss, equanimity, and the final state of absorption in Brahman.",
+      "group": "Chapter IV",
+      "short": "Jīvanmukti",
+      "part": [4, 8],
+      "base": "4",
+      "range": ["535", "580"],
+      "nroots": 3,
+      "nav": [
+        ["s", "535", "निरस्तमायागुणबन्धनो यः सदैव शान्तो रसिकः स्वभावे । स एव मुक्तः सुखदुःखहीनः सदा निरन्तर्नियतस्वभावः ॥५३५॥", "nirastamāyāguṇabandhano yaḥ sadaiva śānto rasikaḥ svabhāve / sa eva muktaḥ sukhaduḥkhahīnaḥ sadā nirantarniyatasvabhāvaḥ //535//", "535"],
+        ["s", "560", "स्वात्मानुभूतौ यदयं प्रमादः प्रमाद एवास्य भवेत्प्रबोधे । तस्मात्सदा सावधानेन भाव्यं स्वात्मैव सत्यं परमं विचिन्त्यम् ॥५६०॥", "svātmānubhūtau yadayam pramādaḥ pramāda evāsya bhavetprabodhe / tasmātsadā sāvadhānena bhāvyaṃ svātmaiva satyaṃ paramaṃ vicintyam //560//", "560"],
+        ["s", "580", "इत्यात्मनात्मानमवेक्ष्य बुद्ध्या सूक्ष्मात्मतत्त्वं निखिलस्य गुह्यम् । स्थित्वा यथाप्राप्तविधिप्रवृत्तौ ततः प्रणम्य प्रविशेद्विरक्तः ॥५८०॥", "ityātmanātmānamavekṣya buddhyā sūkṣmātmatattvaṃ nikhilasya guhyam / sthitvā yathāprāptavidhipravṛttau tataḥ praṇamya praviśedviraktaḥ //580//", "580"]
+      ]
+    }
+  ]
+}
