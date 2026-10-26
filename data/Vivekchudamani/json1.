@@ -1,0 +1,108 @@
+{
+  "id": "2",
+  "units": [
+    {
+      "id": "1",
+      "segs": [
+        {
+          "t": "s",
+          "w": [
+            ["सर्ववेदान्तसिद्धान्तगोचरं", 351],
+            ["तम्", 287],
+            ["अगोचरम्", 11],
+            "।",
+            ["गोविन्दं", 65],
+            ["परमानन्दं", 143],
+            ["सद्गुरुं", 218],
+            ["प्रणतः", 172],
+            ["अस्मि", 9],
+            ["अहम्", 1],
+            "॥"
+          ],
+          "id": "1",
+          "n": "1",
+          "i": "sarvavedāntasiddhāntagocaraṃ tam agocaraṃ / govindaṃ paramānandaṃ sadguruṃ praṇato 'smy aham //",
+          "verse": 1
+        }
+      ]
+    }
+  ],
+  "lex": [
+    {
+      "w": "sarvavedāntasiddhāntagocaraṃ",
+      "p": [
+        { "u": "sarva",     "l": "sarva",     "g": "compound member (stem)", "d": "सर्व",     "ld": "सर्व" },
+        { "u": "vedānta",   "l": "vedānta",   "g": "compound member (stem)", "d": "वेदान्त",   "ld": "वेदान्त" },
+        { "u": "siddhānta", "l": "siddhānta", "g": "compound member (stem)", "d": "सिद्धान्त", "ld": "सिद्धान्त" },
+        { "u": "gocaram",   "l": "gocara",    "g": "acc. sg. m. / nom.-acc. sg. n. — ‘within the range of’",
+          "a": [["gocara", "acc. sg. m. / nom.-acc. sg. n."]],
+          "d": "गोचरम्", "ld": "गोचर" }
+      ]
+    },
+    {
+      "w": "tam",
+      "p": [
+        { "u": "tam", "l": "tad", "g": "pronoun: acc. sg. m.",
+          "a": [["tad", "pronoun: acc. sg. m."]],
+          "d": "तम्", "ld": "तद्" }
+      ]
+    },
+    {
+      "w": "agocaram",
+      "p": [
+        { "u": "a",       "l": "a",       "g": "negating prefix (nañ)", "d": "अ",       "ld": "अ" },
+        { "u": "gocaram", "l": "gocara",  "g": "acc. sg. m. / nom.-acc. sg. n. — ‘beyond the range of’",
+          "d": "गोचरम्", "ld": "गोचर" }
+      ]
+    },
+    {
+      "w": "govindaṃ",
+      "p": [
+        { "u": "govindam", "l": "govinda", "g": "acc. sg. m. — proper name (Viṣṇu/Kṛṣṇa)",
+          "a": [["govinda", "acc. sg. m. / nom.-acc. sg. n."]],
+          "d": "गोविन्दम्", "ld": "गोविन्द" }
+      ]
+    },
+    {
+      "w": "paramānandaṃ",
+      "p": [
+        { "u": "parama",   "l": "parama",   "g": "compound member (stem) — highest", "d": "परम",   "ld": "परम" },
+        { "u": "ānandam",  "l": "ānanda",   "g": "acc. sg. m. / nom.-acc. sg. n. — bliss",
+          "d": "आनन्दम्", "ld": "आनन्द" }
+      ]
+    },
+    {
+      "w": "sadguruṃ",
+      "p": [
+        { "u": "sat",     "l": "sat",     "g": "compound member (stem) — true, real", "d": "सत्",     "ld": "सत्" },
+        { "u": "gurum",   "l": "guru",    "g": "acc. sg. m. — teacher",
+          "a": [["guru", "acc. sg. m."]],
+          "d": "गुरुम्", "ld": "गुरु" }
+      ]
+    },
+    {
+      "w": "praṇataḥ",
+      "p": [
+        { "u": "praṇataḥ", "l": "praṇata", "g": "nom. sg. m. — bowed, prostrate",
+          "a": [["praṇam", "verb: past passive participle, nom. sg. m."]],
+          "d": "प्रणतः", "ld": "प्रणत" }
+      ]
+    },
+    {
+      "w": "asmi",
+      "p": [
+        { "u": "asmi", "l": "as", "g": "verb: present, 1st pers. sg., active — I am",
+          "a": [["as", "verb: present, 1st pers. sg., active"]],
+          "d": "अस्मि", "ld": "अस्" }
+      ]
+    },
+    {
+      "w": "aham",
+      "p": [
+        { "u": "aham", "l": "aham", "g": "pronoun: nom. sg. — I",
+          "a": [["aham", "pronoun: nom. sg."]],
+          "d": "अहम्", "ld": "अहम्" }
+      ]
+    }
+  ]
+}
